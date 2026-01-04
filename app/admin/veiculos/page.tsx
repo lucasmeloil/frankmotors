@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Plus, Edit2, Trash2, Search, ExternalLink, Tag as TagIcon, Car } from 'lucide-react';
 import Image from 'next/image';
@@ -12,11 +12,7 @@ export default function AdminVehiclesPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    fetchVehicles();
-  }, []);
-
-  const fetchVehicles = async () => {
+  const fetchVehicles = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/vehicles?pageSize=100');
@@ -27,7 +23,11 @@ export default function AdminVehiclesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchVehicles();
+  }, [fetchVehicles]);
 
   const handleDelete = async (id: string, name: string) => {
     toast.warning(`Deseja realmente excluir ${name}?`, {

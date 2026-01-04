@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { UserPlus, Trash2, Mail, Shield, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function UsersPage() {
@@ -10,11 +10,7 @@ export default function UsersPage() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState({ type: '', text: '' });
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/users', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` }
@@ -26,7 +22,11 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Tag, Plus, Edit2, Trash2, Car, TrendingDown } from 'lucide-react';
 import Image from 'next/image';
 import { Vehicle } from '@/lib/types';
@@ -9,11 +9,7 @@ export default function AdminPromotionsPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchPromotions();
-  }, []);
-
-  const fetchPromotions = async () => {
+  const fetchPromotions = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/vehicles?promocao=true');
@@ -24,7 +20,11 @@ export default function AdminPromotionsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchPromotions();
+  }, [fetchPromotions]);
 
   return (
     <div className="space-y-6">
