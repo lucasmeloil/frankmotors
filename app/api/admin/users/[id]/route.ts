@@ -4,8 +4,9 @@ import { verifyToken } from '@/lib/auth';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -22,7 +23,7 @@ export async function DELETE(
     try {
       const result = await pool.query(
         'DELETE FROM users WHERE id = $1 RETURNING id',
-        [params.id]
+        [id]
       );
 
       if (result.rows.length === 0) {

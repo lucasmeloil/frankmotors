@@ -6,8 +6,9 @@ import { mockVehicles } from '@/lib/mockVehicles';
 // GET /api/vehicles/[id] - Get single vehicle
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     try {
       const result = await pool.query(
@@ -23,7 +24,7 @@ export async function GET(
         LEFT JOIN vehicle_photos vp ON v.id = vp.vehicle_id
         WHERE v.id = $1
         GROUP BY v.id`,
-        [params.id]
+        [id]
       );
 
       if (result.rows.length > 0) {
@@ -34,7 +35,7 @@ export async function GET(
     }
 
     // Fallback to mock data
-    const mockVehicle = mockVehicles.find((v: any) => v.id === params.id);
+    const mockVehicle = mockVehicles.find((v: any) => v.id === id);
     if (!mockVehicle) {
       return NextResponse.json(
         { error: 'Veículo não encontrado' },
@@ -55,8 +56,9 @@ export async function GET(
 // PUT /api/vehicles/[id] - Update vehicle (admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -79,7 +81,7 @@ export async function PUT(
              tipo = $6, promocao = $7, estoque = $8
          WHERE id = $9
          RETURNING *`,
-        [modelo, marca, ano, preco, descricao, tipo, promocao, estoque, params.id]
+        [modelo, marca, ano, preco, descricao, tipo, promocao, estoque, id]
       );
 
       if (result.rows.length === 0) {
@@ -90,12 +92,12 @@ export async function PUT(
       }
 
       // Update photos: delete old and insert new (simple approach)
-      await pool.query('DELETE FROM vehicle_photos WHERE vehicle_id = $1', [params.id]);
+      await pool.query('DELETE FROM vehicle_photos WHERE vehicle_id = $1', [id]);
       if (fotos && Array.isArray(fotos)) {
         for (const photo of fotos) {
           await pool.query(
             'INSERT INTO vehicle_photos (vehicle_id, url, position) VALUES ($1, $2, $3)',
-            [params.id, photo.url, photo.position]
+            [id, photo.url, photo.position]
           );
         }
       }
@@ -105,7 +107,7 @@ export async function PUT(
       console.warn('Database error updating vehicle, simulating success:', dbError);
       return NextResponse.json({ 
         message: 'Modo Offline: Alterações salvas localmente.', 
-        id: params.id,
+        id: id,
         modelo, marca, ano, preco, fotos: fotos || []
       });
     }
@@ -121,8 +123,9 @@ export async function PUT(
 // DELETE /api/vehicles/[id] - Delete vehicle (admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -139,7 +142,7 @@ export async function DELETE(
     try {
       const result = await pool.query(
         'DELETE FROM vehicles WHERE id = $1 RETURNING id',
-        [params.id]
+        [id]
       );
 
       if (result.rows.length === 0) {
