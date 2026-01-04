@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import VehicleCard from '@/components/VehicleCard';
 import { Vehicle } from '@/lib/types';
 import { Filter, X, ChevronDown, Trash2 } from 'lucide-react';
@@ -22,11 +22,7 @@ export default function VeiculosPage() {
     sortBy: 'relevancia',
   });
 
-  useEffect(() => {
-    fetchVehicles();
-  }, [page, filters]);
-
-  const fetchVehicles = async () => {
+  const fetchVehicles = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -49,7 +45,11 @@ export default function VeiculosPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, filters]);
+
+  useEffect(() => {
+    fetchVehicles();
+  }, [fetchVehicles]);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters({ ...filters, [key]: value });

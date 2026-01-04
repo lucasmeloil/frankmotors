@@ -3,21 +3,29 @@ import VehicleCard from '@/components/VehicleCard';
 import { Vehicle } from '@/lib/types';
 import Link from 'next/link';
 import { ArrowRight, Award, Shield, Clock, ThumbsUp } from 'lucide-react';
+import { mockVehicles } from '@/lib/mockVehicles';
+
+export const dynamic = 'force-dynamic';
 
 async function getFeaturedVehicles(): Promise<Vehicle[]> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/vehicles?pageSize=3`, {
-      cache: 'no-store',
-    });
     
-    if (!res.ok) return [];
+    // During build or if server is not up, this might fail
+    const res = await fetch(`${baseUrl}/api/vehicles?pageSize=3`, {
+      next: { revalidate: 3600 } // Use ISR instead of no-store to allow build to continue
+    }).catch(() => null);
+    
+    if (!res || !res.ok) {
+      console.warn('API fetch failed, using mock data as fallback');
+      return mockVehicles.slice(0, 3);
+    }
     
     const data = await res.json();
-    return data.vehicles || [];
+    return data.vehicles || mockVehicles.slice(0, 3);
   } catch (error) {
     console.error('Error fetching featured vehicles:', error);
-    return [];
+    return mockVehicles.slice(0, 3);
   }
 }
 

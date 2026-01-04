@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Vehicle } from '@/lib/types';
 import { useCart } from '@/context/CartContext';
@@ -15,13 +15,7 @@ export default function VehicleDetailsPage() {
   const [activeImage, setActiveImage] = useState(0);
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    if (id) {
-      fetchVehicle();
-    }
-  }, [id]);
-
-  const fetchVehicle = async () => {
+  const fetchVehicle = useCallback(async () => {
     try {
       const res = await fetch(`/api/vehicles/${id}`);
       if (!res.ok) throw new Error('Failed to fetch');
@@ -32,7 +26,13 @@ export default function VehicleDetailsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchVehicle();
+    }
+  }, [id, fetchVehicle]);
 
   if (loading) {
     return (
