@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { VehicleProvider } from "@/context/VehicleContext";
@@ -8,6 +9,8 @@ import MobileFixedMenu from "@/components/MobileFixedMenu";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import ScrollToTop from "@/components/ScrollToTop";
 import GlobalCartDrawer from "@/components/GlobalCartDrawer";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Frank Motors - Veículos Novos e Seminovos",
@@ -28,7 +31,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body>
+      <body className={inter.className}>
         <Toaster position="top-right" richColors closeButton />
         <CartProvider>
           <VehicleProvider>
