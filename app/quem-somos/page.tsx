@@ -77,7 +77,7 @@ export default function QuemSomos() {
                   Nossa missão em Lagarto, Sergipe, é proporcionar uma experiência de compra premium, focada na necessidade real de cada cliente. Trabalhamos com veículos criteriosamente periciados, garantindo 100% de procedência.
                 </p>
                 <p className="italic font-bold text-primary">
-                  "DEUS é bom o tempo todo 🙏🏼🙌🏼"
+                  &quot;DEUS é bom o tempo todo 🙏🏼🙌🏼&quot;
                 </p>
               </div>
 

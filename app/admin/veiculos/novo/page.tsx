@@ -32,7 +32,8 @@ export default function VehicleFormPage() {
     if (isEdit) {
       fetchVehicle();
     }
-  }, [id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEdit]);
 
   const fetchVehicle = async () => {
     try {
