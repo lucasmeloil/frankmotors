@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --primary: #0a0a0a;
+  --secondary: #e60000;
+  --background: #f8fafc;
+  --text: #1e293b;
+  --accent: #facc15;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  color: var(--text);
+  background-color: var(--background);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+  
+  .glass-nav {
+    @apply bg-white/80 backdrop-blur-md border-b border-white/10;
+  }
+
+  .premium-gradient {
+    @apply bg-gradient-to-br from-primary via-gray-900 to-black;
+  }
+
+  .btn-primary {
+    @apply bg-secondary text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .shadow-premium {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  }
+
+  .shadow-premium-hover {
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+  }
+}
