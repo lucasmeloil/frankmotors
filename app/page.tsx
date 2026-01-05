@@ -41,8 +41,8 @@ export default async function Home() {
       <section className="py-24 bg-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto mb-16">
-            {/* Card 1: Identity & Brand Power */}
+          <div className="max-w-5xl mx-auto mb-16">
+            {/* Card 1: Identity & Brand Power - Main Focus */}
             <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl bg-white border border-gray-100 group hover:shadow-premium hover:-translate-y-1 transition-all duration-500 flex flex-col items-center justify-center p-8 md:p-12 text-center min-h-[350px]">
               <div className="absolute top-0 w-full h-1.5 bg-gradient-to-r from-secondary via-primary to-secondary"></div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gray-50 rounded-full blur-3xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -56,28 +56,6 @@ export default async function Home() {
                 <div className="flex justify-center">
                   <div className="h-1.5 w-24 bg-secondary rounded-full shadow-[0_0_15px_rgba(230,0,0,0.4)] group-hover:w-40 transition-all duration-500"></div>
                 </div>
-              </div>
-            </div>
-
-            {/* Card 2: Credentials & Trust */}
-            <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl bg-gradient-to-br from-white to-gray-50 border border-gray-100 group hover:shadow-premium hover:-translate-y-1 transition-all duration-500 flex flex-col items-center justify-center p-8 md:p-12 text-center min-h-[350px]">
-              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
-              
-              <div className="space-y-8 w-full animate-slide-up relative z-10" style={{ animationDelay: '0.1s' }}>
-                <div className="flex flex-col gap-3 w-full max-w-xs mx-auto">
-                    <div className="bg-white/80 backdrop-blur-sm border border-gray-100 px-6 py-4 rounded-2xl shadow-sm flex items-center justify-center gap-3 transform group-hover:scale-105 transition-all duration-300 hover:shadow-md hover:border-secondary/20 hover:bg-white">
-                      <span className="font-bold text-gray-700 text-sm md:text-base">Loja Destaque 2024/25</span>
-                      <span className="text-2xl animate-pulse">🏆</span>
-                    </div>
-                    <div className="bg-white/80 backdrop-blur-sm border border-gray-100 px-6 py-4 rounded-2xl shadow-sm flex items-center justify-center gap-3 transform group-hover:scale-105 transition-all duration-300 delay-75 hover:shadow-md hover:border-secondary/20 hover:bg-white">
-                      <span className="font-bold text-gray-700 text-sm md:text-base">DEUS é bom o tempo todo</span>
-                      <span className="text-2xl">🙏🏼</span>
-                    </div>
-                </div>
-
-                <p className="text-xl md:text-2xl font-heading font-black text-gray-800 leading-tight max-w-md mx-auto">
-                  Referência em <span className="text-secondary decoration-4 underline-offset-4 decoration-secondary/10 group-hover:underline transition-all">Lagarto e região</span> para quem busca qualidade e transparência.
-                </p>
               </div>
             </div>
           </div>
