@@ -28,8 +28,8 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Início', href: '/' },
-    { name: 'Veículos', href: '/veiculos' },
     { name: 'Quem Somos', href: '/quem-somos' },
+    { name: 'Veículos', href: '/veiculos' },
     { name: 'Contato', href: '/contato' },
   ];
 
@@ -142,18 +142,18 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                style={{ transitionDelay: `${i * 100}ms` }}
                 className={`group block py-2 text-4xl sm:text-5xl font-black uppercase italic tracking-tighter transition-all duration-500 transform ${
-                  isOpen ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'
+                  isOpen ? 'translate-x-0 opacity-100 ml-0' : 'translate-x-20 opacity-0'
                 } ${
-                  isActive(link.href) ? 'text-transparent bg-clip-text bg-gradient-to-r from-secondary to-red-500 ml-4' : 'text-white/50 hover:text-white hover:ml-4'
+                  isActive(link.href) ? 'text-secondary ml-4 drop-shadow-[0_0_15px_rgba(230,0,0,0.6)]' : 'text-white/50 hover:text-white hover:ml-4'
                 }`}
+                style={{ transitionDelay: isOpen ? `${i * 50}ms` : '0ms' }}
                 onClick={() => setIsOpen(false)}
               >
                 <span className="relative">
                   {link.name}
                   {isActive(link.href) && (
-                    <span className="absolute -left-6 top-1/2 -translate-y-1/2 w-2 h-2 bg-secondary rounded-full shadow-[0_0_10px_#e60000]"></span>
+                    <span className="absolute -left-6 top-1/2 -translate-y-1/2 w-3 h-3 bg-secondary rounded-full shadow-[0_0_15px_#e60000] animate-pulse"></span>
                   )}
                 </span>
               </Link>
