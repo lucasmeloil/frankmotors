@@ -15,7 +15,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Frank Motors - Veículos Novos e Seminovos",
   description: "Loja Destaque 2024 e 2025 🏆🏅 • Vendas, compras, trocas e financiamentos de veículos",
-  keywords: "carros, motos, veículos, seminovos, Frank Motors, Cascavel",
+  keywords: "carros, motos, veículos, seminovos, Frank Motors, Lagarto",
 };
 
 import { Toaster } from 'sonner';

@@ -52,7 +52,7 @@ export default async function Home() {
             
             <p className="text-xl text-gray-600 leading-relaxed font-medium animate-slide-up" style={{ animationDelay: '0.1s' }}>
               Loja Destaque 2024 e 2025 🏆🏅 • DEUS é bom o tempo todo 🙏🏼🙌🏼 <br />
-              Referência em Cascavel e região para quem busca qualidade, transparência e as melhores taxas de financiamento.
+              Referência em Lagarto e região para quem busca qualidade, transparência e as melhores taxas de financiamento.
             </p>
             
             {/* Features */}

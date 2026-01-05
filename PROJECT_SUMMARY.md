@@ -336,7 +336,7 @@ Edite os componentes em `components/` e `app/`
 
 ### Endereço
 
-- Av. Brasil, 1234 – Cascavel, PR
+Lagarto, SE
 
 ---
 
