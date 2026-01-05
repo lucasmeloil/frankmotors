@@ -37,26 +37,52 @@ export default async function Home() {
       {/* Hero Section */}
       <Hero />
 
-      {/* About Section */}
+      {/* About Section - Premium Card */}
       <section className="py-24 bg-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-10">
-            <div className="space-y-4 animate-slide-up">
-              <h2 className="font-heading text-4xl md:text-5xl font-black text-primary leading-tight uppercase italic">
-                Frank Motors <span className="text-secondary">—</span> <br className="hidden md:block" />
-                <span className="text-gray-400">Excelência em cada km</span>
-              </h2>
-              <div className="h-1.5 w-24 bg-secondary mx-auto rounded-full"></div>
+          <div className="max-w-5xl mx-auto">
+            <div className="relative overflow-hidden rounded-[3rem] shadow-2xl bg-white border border-gray-100 group hover:shadow-premium transition-all duration-500">
+              {/* Decorative elements */}
+              <div className="absolute top-0 w-full h-2 bg-gradient-to-r from-secondary via-primary to-secondary"></div>
+              <div className="absolute -left-10 w-40 h-40 bg-gray-50 rounded-full blur-3xl opacity-50"></div>
+              
+              <div className="p-12 md:p-20 text-center space-y-12">
+                
+                {/* Header Block */}
+                <div className="space-y-6 animate-slide-up">
+                  <h2 className="font-heading text-5xl md:text-7xl font-black text-primary leading-[0.9] uppercase italic tracking-tighter">
+                    Frank <span className="text-secondary">Motors</span> <span className="text-secondary">—</span> <br />
+                    <span className="text-gray-300">Excelência em cada KM</span>
+                  </h2>
+                  <div className="flex justify-center">
+                    <div className="h-2 w-32 bg-secondary rounded-full shadow-lg shadow-secondary/30"></div>
+                  </div>
+                </div>
+                
+                {/* Content Block */}
+                <div className="space-y-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-xl font-medium text-gray-500">
+                     <span className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 px-6 py-3 rounded-2xl shadow-sm flex items-center gap-3">
+                        Loja Destaque 2024 e 2025 
+                        <span className="text-2xl">🏆🏅</span>
+                     </span>
+                     <span className="hidden md:block w-2 h-2 bg-gray-300 rounded-full"></span>
+                     <span className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 px-6 py-3 rounded-2xl shadow-sm flex items-center gap-3">
+                        DEUS é bom o tempo todo 
+                        <span className="text-2xl">🙏🏼🙌🏼</span>
+                     </span>
+                  </div>
+
+                  <p className="text-2xl md:text-3xl font-heading font-black text-gray-800 leading-tight max-w-4xl mx-auto">
+                    Referência em <span className="text-secondary">Lagarto e região</span> para quem busca qualidade, transparência e as melhores taxas de financiamento.
+                  </p>
+                </div>
+              </div>
             </div>
             
-            <p className="text-xl text-gray-600 leading-relaxed font-medium animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              Loja Destaque 2024 e 2025 🏆🏅 • DEUS é bom o tempo todo 🙏🏼🙌🏼 <br />
-              Referência em Lagarto e região para quem busca qualidade, transparência e as melhores taxas de financiamento.
-            </p>
-            
-            {/* Features */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            {/* Features Grid below card */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
               {[
                 { icon: Award, title: "Loja Destaque", desc: "2024 e 2025", color: "bg-accent/10 text-accent" },
                 { icon: Shield, title: "Garantia", desc: "Veículos Periciados", color: "bg-secondary/10 text-secondary" },
