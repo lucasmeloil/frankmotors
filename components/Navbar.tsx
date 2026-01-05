@@ -99,77 +99,98 @@ export default function Navbar() {
         </nav>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - Innovative Design */}
       <div 
-        className={`fixed inset-0 z-[110] md:hidden transition-all duration-500 ${
+        className={`fixed inset-0 z-[110] md:hidden transition-all duration-700 ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
-        <div className="absolute inset-0 bg-primary/20 backdrop-blur-md" onClick={() => setIsOpen(false)}></div>
+        {/* Background Backdrop with heavy blur */}
         <div 
-          className={`absolute right-0 top-0 bottom-0 w-[75%] bg-white shadow-2xl transition-transform duration-500 flex flex-col overflow-hidden ${
+          className="absolute inset-0 bg-black/60 backdrop-blur-3xl transition-all duration-1000" 
+          onClick={() => setIsOpen(false)}
+        ></div>
+        
+        {/* Gradient Orbs for effect */}
+        <div className={`absolute top-[-10%] right-[-10%] w-[50vh] h-[50vh] bg-secondary/20 rounded-full blur-[100px] pointer-events-none transition-all duration-1000 ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}></div>
+        <div className={`absolute bottom-[-10%] left-[-10%] w-[40vh] h-[40vh] bg-primary/40 rounded-full blur-[80px] pointer-events-none transition-all duration-1000 delay-100 ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}></div>
+
+        <div 
+          className={`absolute right-0 top-0 bottom-0 w-full sm:w-[85%] bg-white/10 border-l border-white/10 shadow-2xl transition-transform duration-500 cubic-bezier(.17,.67,.21,1) flex flex-col overflow-hidden backdrop-blur-xl ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-          <div className="p-6 flex items-center justify-between border-b border-gray-100">
+          {/* Header */}
+          <div className="p-8 flex items-center justify-between border-b border-white/5 relative z-10">
             <div className="flex flex-col">
-              <span className="font-heading font-black text-xl text-primary uppercase italic tracking-tighter">Menu</span>
+              <span className="font-heading font-black text-3xl text-white italic tracking-tighter drop-shadow-lg">
+                MENU
+                <span className="text-secondary">.</span>
+              </span>
             </div>
-            <button onClick={() => setIsOpen(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 text-gray-400 hover:text-primary rounded-full transition-colors">
-              <X size={20} />
+            <button 
+              onClick={() => setIsOpen(false)} 
+              className="w-12 h-12 flex items-center justify-center bg-white/5 hover:bg-white/20 text-white rounded-full transition-all border border-white/10 active:scale-95"
+            >
+              <X size={24} />
             </button>
           </div>
           
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          {/* Menu Items */}
+          <div className="flex-1 overflow-y-auto px-8 py-12 flex flex-col justify-center space-y-2 relative z-10">
             {navLinks.map((link, i) => (
               <Link
                 key={link.name}
                 href={link.href}
-                style={{ animationDelay: `${i * 0.1}s` }}
-                className={`block py-1 text-2xl font-black uppercase italic tracking-tighter transition-all animate-slide-up ${
-                  isActive(link.href) ? 'text-secondary' : 'text-primary/60 hover:text-primary'
+                style={{ transitionDelay: `${i * 100}ms` }}
+                className={`group block py-2 text-4xl sm:text-5xl font-black uppercase italic tracking-tighter transition-all duration-500 transform ${
+                  isOpen ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'
+                } ${
+                  isActive(link.href) ? 'text-transparent bg-clip-text bg-gradient-to-r from-secondary to-red-500 ml-4' : 'text-white/50 hover:text-white hover:ml-4'
                 }`}
                 onClick={() => setIsOpen(false)}
               >
-                {link.name}
+                <span className="relative">
+                  {link.name}
+                  {isActive(link.href) && (
+                    <span className="absolute -left-6 top-1/2 -translate-y-1/2 w-2 h-2 bg-secondary rounded-full shadow-[0_0_10px_#e60000]"></span>
+                  )}
+                </span>
               </Link>
             ))}
           </div>
 
-          <div className="p-6 bg-gray-50 space-y-6 shadow-inner">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4 text-primary group">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                  <Smartphone size={18} className="text-secondary" />
+          {/* Footer Info */}
+          <div className="p-8 bg-black/20 border-t border-white/5 space-y-6 relative z-10">
+            <div className="grid grid-cols-2 gap-4">
+              <a 
+                href="https://wa.me/5579991015150" 
+                target="_blank"
+                className="flex items-center space-x-3 p-4 bg-white/5 hover:bg-green-600/20 text-white rounded-2xl border border-white/5 transition-all group"
+              >
+                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-colors">
+                  <Smartphone size={16} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">WhatsApp</span>
-                  <span className="font-bold text-lg">(79) 99101-5150</span>
+                  <span className="text-[10px] font-black uppercase text-white/40">WhatsApp</span>
+                  <span className="font-bold text-sm">Chamar</span>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4 text-primary group">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                  <MapPin size={18} className="text-secondary" />
+              </a>
+
+              <Link 
+                href="/admin/login" 
+                onClick={() => setIsOpen(false)}
+                className="flex items-center space-x-3 p-4 bg-white/5 hover:bg-white/10 text-white rounded-2xl border border-white/5 transition-all group"
+              >
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white group-hover:bg-white group-hover:text-primary transition-colors">
+                  <User size={16} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Localização</span>
-                  <span className="font-bold text-lg leading-tight">Lagarto, <br className="lg:hidden" />Sergipe</span>
+                  <span className="text-[10px] font-black uppercase text-white/40">Acesso</span>
+                  <span className="font-bold text-sm">Admin</span>
                 </div>
-              </div>
+              </Link>
             </div>
-            <Link 
-              href="/admin/login"
-              className="flex items-center justify-between w-full p-6 bg-primary text-white rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:bg-black transition-all group"
-              onClick={() => setIsOpen(false)}
-            >
-              <div className="flex items-center space-x-3">
-                <User size={18} />
-                <span>Painel Admin</span>
-              </div>
-              <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-secondary transition-colors">
-                <Menu size={14} />
-              </div>
-            </Link>
           </div>
         </div>
       </div>
