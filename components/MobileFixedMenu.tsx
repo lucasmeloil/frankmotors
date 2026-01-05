@@ -21,36 +21,34 @@ export default function MobileFixedMenu() {
 
   return (
     <>
-      <div className="md:hidden fixed bottom-4 left-4 right-4 z-[9999] animate-slide-up">
-        <div className="bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-[2rem] flex justify-around items-center px-2 py-4 relative overflow-hidden">
-          {/* Neon Glow */}
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-secondary to-transparent opacity-50"></div>
-          
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] animate-slide-up">
+        {/* Full width glass container matching Navbar style */}
+        <div className="glass-nav border-t border-white/20 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex justify-between items-center px-6 py-4 pb- safe-area-bottom">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.path;
-            
             return (
               <Link
                 key={item.path}
                 href={item.path}
-                className={`relative flex flex-col items-center justify-center space-y-1 w-16 h-14 transition-all duration-300 ${
-                  isActive ? 'scale-110' : 'opacity-60 hover:opacity-100 hover:scale-105'
+                className={`flex flex-col items-center justify-center space-y-1.5 transition-all duration-300 group ${
+                  isActive ? 'text-secondary -translate-y-1' : 'text-gray-400 hover:text-primary'
                 }`}
               >
-                {isActive && (
-                  <div className="absolute inset-0 bg-secondary/20 blur-xl rounded-full -z-10 animate-pulse"></div>
-                )}
-                
-                <Icon 
-                  size={isActive ? 24 : 22} 
-                  className={`transition-colors duration-300 ${isActive ? 'text-secondary drop-shadow-[0_0_8px_rgba(230,0,0,0.5)]' : 'text-gray-300'}`} 
-                  strokeWidth={isActive ? 2.5 : 2}
-                />
-                
-                {isActive && (
-                  <span className="absolute -bottom-2 w-1 h-1 bg-secondary rounded-full shadow-[0_0_5px_#e60000]"></span>
-                )}
+                <div className={`relative ${isActive ? 'scale-110' : 'scale-100 group-hover:scale-110'} transition-transform`}>
+                  <Icon 
+                    size={24} 
+                    strokeWidth={isActive ? 2.5 : 2} 
+                    className={isActive ? 'drop-shadow-sm' : ''} 
+                  />
+                  {isActive && (
+                     <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full shadow-sm"></span>
+                  )}
+                </div>
+                {/* Optional: Text label can be hidden or shown depending on minimal preference. Sticking to minimal but readable per user request for "taking up space" */}
+                {/* <span className={`text-[9px] font-black uppercase tracking-[0.1em] ${isActive ? 'opacity-100' : 'opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100'} transition-all`}>
+                  {item.label}
+                </span> */}
               </Link>
             );
           })}
