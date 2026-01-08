@@ -3,7 +3,7 @@ import VehicleCard from '@/components/VehicleCard';
 import { Vehicle } from '@/lib/types';
 import Link from 'next/link';
 import { ArrowRight, Award, Shield, Clock, ThumbsUp } from 'lucide-react';
-import { mockVehicles } from '@/lib/mockVehicles';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -17,15 +17,15 @@ async function getFeaturedVehicles(): Promise<Vehicle[]> {
     }).catch(() => null);
     
     if (!res || !res.ok) {
-      console.warn('API fetch failed, using mock data as fallback');
-      return mockVehicles.slice(0, 3);
+      console.warn('API fetch failed, returning empty list');
+      return [];
     }
     
     const data = await res.json();
-    return data.vehicles || mockVehicles.slice(0, 3);
+    return data.vehicles || [];
   } catch (error) {
     console.error('Error fetching featured vehicles:', error);
-    return mockVehicles.slice(0, 3);
+    return [];
   }
 }
 
