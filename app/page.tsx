@@ -9,22 +9,38 @@ export const dynamic = 'force-dynamic';
 
 async function getFeaturedVehicles(): Promise<Vehicle[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    // Import Firestore dynamically to ensure server-compatibility
+    const { db } = await import('@/lib/firebase');
+    const { collection, getDocs, query, where, orderBy, limit } = await import('firebase/firestore');
+
+    const vehiclesRef = collection(db, 'vehicles');
+    // Query: Promocao == true
+    // Note: Composite index might be needed for 'promocao' + 'created_at'. 
+    // If index is missing, simple filter + memory sort is safer for small datasets.
+    // Let's try simple filtering first to avoid index errors blocking the view.
+    const q = query(vehiclesRef, where('promocao', '==', true));
     
-    // During build or if server is not up, this might fail
-    const res = await fetch(`${baseUrl}/api/vehicles?pageSize=3&promocao=true`, {
-      cache: 'no-store'
-    }).catch(() => null);
+    const snapshot = await getDocs(q);
     
-    if (!res || !res.ok) {
-      console.warn('API fetch failed, returning empty list');
-      return [];
-    }
-    
-    const data = await res.json();
-    return data.vehicles || [];
+    // Map items
+    const vehicles = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as Vehicle[];
+
+    // Sort by integer price or created_at in memory to avoid index requirement on deploy
+    vehicles.sort((a, b) => {
+        // Safe date comparison
+        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return dateB - dateA;
+    });
+
+    // Return top 3
+    return vehicles.slice(0, 3);
+
   } catch (error) {
-    console.error('Error fetching featured vehicles:', error);
+    console.error('Error fetching featured vehicles from Firestore:', error);
     return [];
   }
 }
