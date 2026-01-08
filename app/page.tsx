@@ -13,7 +13,7 @@ async function getFeaturedVehicles(): Promise<Vehicle[]> {
     
     // During build or if server is not up, this might fail
     const res = await fetch(`${baseUrl}/api/vehicles?pageSize=3&promocao=true`, {
-      next: { revalidate: 3600 } // Use ISR instead of no-store to allow build to continue
+      cache: 'no-store'
     }).catch(() => null);
     
     if (!res || !res.ok) {

@@ -3,6 +3,8 @@ import pool from '@/lib/db';
 import { verifyToken } from '@/lib/auth';
 import { mockVehicles } from '@/lib/mockVehicles';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/vehicles - List vehicles with filters
 // GET /api/vehicles - List vehicles from Firestore
 export async function GET(request: NextRequest) {
