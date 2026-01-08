@@ -12,7 +12,7 @@ async function getFeaturedVehicles(): Promise<Vehicle[]> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     
     // During build or if server is not up, this might fail
-    const res = await fetch(`${baseUrl}/api/vehicles?pageSize=3`, {
+    const res = await fetch(`${baseUrl}/api/vehicles?pageSize=3&promocao=true`, {
       next: { revalidate: 3600 } // Use ISR instead of no-store to allow build to continue
     }).catch(() => null);
     

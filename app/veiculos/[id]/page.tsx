@@ -15,24 +15,32 @@ export default function VehicleDetailsPage() {
   const [activeImage, setActiveImage] = useState(0);
   const { addToCart } = useCart();
 
-  const fetchVehicle = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/vehicles/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setVehicle(data);
-    } catch (error) {
-      console.error('Error fetching vehicle:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
   useEffect(() => {
-    if (id) {
-      fetchVehicle();
-    }
-  }, [id, fetchVehicle]);
+    const fetchVehicle = async () => {
+      if (!id) return;
+      try {
+        const { db } = await import('@/lib/firebase');
+        const { doc, getDoc } = await import('firebase/firestore');
+        
+        const docRef = doc(db, 'vehicles', id as string);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setVehicle({ id: docSnap.id, ...data } as Vehicle);
+        } else {
+          setVehicle(null);
+        }
+      } catch (error) {
+        console.error('Error fetching vehicle from Firestore:', error);
+        setVehicle(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVehicle();
+  }, [id]);
 
   if (loading) {
     return (

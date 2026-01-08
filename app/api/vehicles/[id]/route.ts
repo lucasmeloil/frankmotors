@@ -4,48 +4,34 @@ import { verifyToken } from '@/lib/auth';
 import { mockVehicles } from '@/lib/mockVehicles';
 
 // GET /api/vehicles/[id] - Get single vehicle
+// GET /api/vehicles/[id] - Get single vehicle from Firestore
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
   try {
-    try {
-      const result = await pool.query(
-        `SELECT v.*, 
-          json_agg(
-            json_build_object(
-              'id', vp.id,
-              'url', vp.url,
-              'position', vp.position
-            ) ORDER BY vp.position
-          ) FILTER (WHERE vp.id IS NOT NULL) as fotos
-        FROM vehicles v
-        LEFT JOIN vehicle_photos vp ON v.id = vp.vehicle_id
-        WHERE v.id = $1
-        GROUP BY v.id`,
-        [id]
-      );
+    const { db } = await import('@/lib/firebase');
+    const { doc, getDoc } = await import('firebase/firestore');
 
-      if (result.rows.length > 0) {
-        return NextResponse.json(result.rows[0]);
-      }
-    } catch (dbError) {
-      console.warn('Database error fetching single vehicle, checking mock data:', dbError);
-    }
+    const docRef = doc(db, 'vehicles', id);
+    const docSnap = await getDoc(docRef);
 
-    // Fallback to mock data
-    const mockVehicle = mockVehicles.find((v: any) => v.id === id);
-    if (!mockVehicle) {
+    if (!docSnap.exists()) {
       return NextResponse.json(
         { error: 'Veículo não encontrado' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(mockVehicle);
+    const data = docSnap.data();
+    return NextResponse.json({ 
+      id: docSnap.id, 
+      ...data, 
+      fotos: data.fotos || [] 
+    });
   } catch (error) {
-    console.error('Error fetching vehicle:', error);
+    console.error('Error fetching vehicle from Firestore:', error);
     return NextResponse.json(
       { error: 'Erro ao buscar veículo' },
       { status: 500 }
