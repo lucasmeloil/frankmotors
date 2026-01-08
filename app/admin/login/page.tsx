@@ -19,29 +19,34 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      // Import auth dynamically to ensure it uses the initialized instance
+      const { auth } = await import('@/lib/firebase');
+      const { signInWithEmailAndPassword } = await import('firebase/auth');
 
-      const data = await res.json();
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const token = await user.getIdToken();
 
-      if (!res.ok) {
-        setError(data.error || 'Erro ao fazer login');
-        setLoading(false);
-        return;
-      }
-
-      // Store token
-      localStorage.setItem('admin_token', data.token);
-      localStorage.setItem('admin_user', JSON.stringify(data.user));
+      // Store token to satisfy AdminLayout protection
+      localStorage.setItem('admin_token', token);
+      localStorage.setItem('admin_user', JSON.stringify({
+        email: user.email,
+        uid: user.uid,
+        name: user.displayName || 'Admin'
+      }));
       sessionStorage.setItem('show_welcome', 'true');
 
       // Redirect to dashboard
       router.push('/admin');
-    } catch (error) {
-      setError('Erro ao conectar com o servidor');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        setError('E-mail ou senha incorretos.');
+      } else if (err.code === 'auth/too-many-requests') {
+        setError('Muitas tentativas. Tente novamente mais tarde.');
+      } else {
+        setError('Erro ao conectar com o servidor. Tente novamente.');
+      }
       setLoading(false);
     }
   };
