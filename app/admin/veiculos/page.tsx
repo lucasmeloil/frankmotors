@@ -35,20 +35,17 @@ export default function AdminVehiclesPage() {
         label: 'Excluir',
         onClick: async () => {
           try {
-            const res = await fetch(`/api/vehicles/${id}`, {
-              method: 'DELETE',
-              headers: {
-                'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
-              }
-            });
-            if (res.ok) {
-              setVehicles(vehicles.filter(v => v.id !== id));
-              toast.success(`${name} excluído com sucesso!`);
-            } else {
-              toast.error('Não foi possível excluir o veículo.');
-            }
+            const { db } = await import('@/lib/firebase');
+            const { doc, deleteDoc } = await import('firebase/firestore');
+
+            const vehicleRef = doc(db, 'vehicles', id);
+            await deleteDoc(vehicleRef);
+
+            setVehicles(vehicles.filter(v => v.id !== id));
+            toast.success(`${name} excluído com sucesso!`);
           } catch (e) {
-            toast.error('Erro de conexão ao tentar excluir.');
+            console.error(e);
+            toast.error('Erro ao excluir do Firestore.');
           }
         },
       },
