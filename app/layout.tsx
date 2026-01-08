@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "Frank Motors - Veículos Novos e Seminovos",
   description: "Loja Destaque 2024 e 2025 🏆🏅 • Vendas, compras, trocas e financiamentos de veículos",
   keywords: "carros, motos, veículos, seminovos, Frank Motors, Lagarto",
+  icons: {
+    icon: '/icon.jpg',
+  },
 };
 
 import { Toaster } from 'sonner';
@@ -28,9 +31,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <head>
-        <link rel="icon" href="/favicon.ico" />
-      </head>
       <body className={inter.className}>
         <Toaster position="top-right" richColors closeButton />
         <CartProvider>
