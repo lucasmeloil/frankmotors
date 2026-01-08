@@ -4,10 +4,27 @@ import { verifyToken } from '@/lib/auth';
 import { mockVehicles } from '@/lib/mockVehicles';
 
 // GET /api/vehicles - List vehicles with filters
+// GET /api/vehicles - List vehicles from Firestore
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     
+    // Import Firestore dynamically
+    const { db } = await import('@/lib/firebase');
+    const { collection, getDocs, query, orderBy, where } = await import('firebase/firestore');
+
+    const vehiclesRef = collection(db, 'vehicles');
+    // Basic fetch - detailed filtering done in memory for flexibility without complex indexes
+    const q = query(vehiclesRef); // Could add orderBy('created_at', 'desc') if index exists
+    
+    const snapshot = await getDocs(q);
+    
+    let vehicles: any[] = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    // Apply Filter Params in Memory
     const marca = searchParams.get('marca');
     const ano = searchParams.get('ano');
     const precoMin = searchParams.get('precoMin');
@@ -17,135 +34,40 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '12');
 
-    let resultRows = [];
-    let totalCount = 0;
-
-    try {
-      let query = `
-        SELECT v.*, 
-          json_agg(
-            json_build_object(
-              'id', vp.id,
-              'url', vp.url,
-              'position', vp.position
-            ) ORDER BY vp.position
-          ) FILTER (WHERE vp.id IS NOT NULL) as fotos
-        FROM vehicles v
-        LEFT JOIN vehicle_photos vp ON v.id = vp.vehicle_id
-        WHERE 1=1
-      `;
-      
-      const params: any[] = [];
-      let paramCount = 0;
-
-      if (marca) {
-        paramCount++;
-        query += ` AND v.marca ILIKE $${paramCount}`;
-        params.push(`%${marca}%`);
-      }
-
-      if (ano) {
-        paramCount++;
-        query += ` AND v.ano = $${paramCount}`;
-        params.push(parseInt(ano));
-      }
-
-      if (precoMin) {
-        paramCount++;
-        query += ` AND v.preco >= $${paramCount}`;
-        params.push(parseFloat(precoMin));
-      }
-
-      if (precoMax) {
-        paramCount++;
-        query += ` AND v.preco <= $${paramCount}`;
-        params.push(parseFloat(precoMax));
-      }
-
-      if (tipo) {
-        paramCount++;
-        query += ` AND v.tipo = $${paramCount}`;
-        params.push(tipo);
-      }
-
-      if (promocao === 'true') {
-        query += ` AND v.promocao = true`;
-      }
-
-      query += ` GROUP BY v.id ORDER BY v.created_at DESC`;
-
-      // Add pagination
-      const offset = (page - 1) * pageSize;
-      paramCount++;
-      query += ` LIMIT $${paramCount}`;
-      params.push(pageSize);
-      
-      paramCount++;
-      query += ` OFFSET $${paramCount}`;
-      params.push(offset);
-
-      const dbResult = await pool.query(query, params);
-      resultRows = dbResult.rows;
-
-      // Get total count
-      let countQuery = 'SELECT COUNT(*) FROM vehicles WHERE 1=1';
-      const countParams: any[] = [];
-      let countParamCount = 0;
-
-      if (marca) {
-        countParamCount++;
-        countQuery += ` AND marca ILIKE $${countParamCount}`;
-        countParams.push(`%${marca}%`);
-      }
-
-      if (ano) {
-        countParamCount++;
-        countQuery += ` AND ano = $${countParamCount}`;
-        countParams.push(parseInt(ano));
-      }
-
-      if (precoMin) {
-        countParamCount++;
-        countQuery += ` AND preco >= $${countParamCount}`;
-        countParams.push(parseFloat(precoMin));
-      }
-
-      if (precoMax) {
-        countParamCount++;
-        countQuery += ` AND preco <= $${countParamCount}`;
-        countParams.push(parseFloat(precoMax));
-      }
-
-      if (tipo) {
-        countParamCount++;
-        countQuery += ` AND tipo = $${countParamCount}`;
-        countParams.push(tipo);
-      }
-
-      if (promocao === 'true') {
-        countQuery += ` AND promocao = true`;
-      }
-
-      const countResult = await pool.query(countQuery, countParams);
-      totalCount = parseInt(countResult.rows[0].count);
-    } catch (dbError) {
-      console.warn('Database error, using mock data:', dbError);
-      // Filter mock data manually
-      let filtered = [...mockVehicles];
-      
-      if (marca) filtered = filtered.filter(v => v.marca.toLowerCase().includes(marca.toLowerCase()));
-      if (ano) filtered = filtered.filter(v => v.ano === parseInt(ano));
-      if (tipo) filtered = filtered.filter(v => v.tipo === tipo);
-      if (precoMin) filtered = filtered.filter(v => v.preco >= parseFloat(precoMin));
-      if (precoMax) filtered = filtered.filter(v => v.preco <= parseFloat(precoMax));
-      if (promocao === 'true') filtered = filtered.filter(v => v.promocao);
-
-      totalCount = filtered.length;
-      resultRows = filtered.slice((page - 1) * pageSize, page * pageSize);
+    if (marca) {
+      vehicles = vehicles.filter(v => v.marca?.toLowerCase().includes(marca.toLowerCase()));
+    }
+    if (ano) {
+      vehicles = vehicles.filter(v => v.ano === parseInt(ano));
+    }
+    if (tipo) {
+      vehicles = vehicles.filter(v => v.tipo === tipo);
+    }
+    if (precoMin) {
+      vehicles = vehicles.filter(v => (v.preco || 0) >= parseFloat(precoMin));
+    }
+    if (precoMax) {
+      vehicles = vehicles.filter(v => (v.preco || 0) <= parseFloat(precoMax));
+    }
+    if (promocao === 'true') {
+      vehicles = vehicles.filter(v => v.promocao === true);
     }
 
+    // Sort by creation or other criteria (default desc)
+    vehicles.sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    const totalCount = vehicles.length;
+    
+    // Pagination
+    const startIndex = (page - 1) * pageSize;
+    const paginatedVehicles = vehicles.slice(startIndex, startIndex + pageSize);
+
     return NextResponse.json({
-      vehicles: resultRows,
+      vehicles: paginatedVehicles,
       pagination: {
         page,
         pageSize,
@@ -154,10 +76,11 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching vehicles:', error);
+    console.error('Error fetching vehicles from Firebase:', error);
+    // Fallback to mock if Firebase fails (or return empty)
     return NextResponse.json(
-      { error: 'Erro ao buscar veículos', vehicles: [], pagination: { total: 0, totalPages: 0 } },
-      { status: 200 } // Return 200 with empty to avoid crashing frontend
+      { vehicles: [], pagination: { total: 0, totalPages: 0 }, error: 'Erro ao buscar dados' },
+      { status: 200 }
     );
   }
 }
