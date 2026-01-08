@@ -37,14 +37,31 @@ export default function VehicleFormPage() {
 
   const fetchVehicle = async () => {
     try {
-      const res = await fetch(`/api/vehicles/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setFormData({
-        ...data,
-        preco: Number(data.preco),
-        fotos: data.fotos || []
-      });
+      if (!id) return;
+      
+      const { db } = await import('@/lib/firebase');
+      const { doc, getDoc } = await import('firebase/firestore');
+      
+      const docRef = doc(db, 'vehicles', id as string);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setFormData({
+          marca: data.marca || '',
+          modelo: data.modelo || '',
+          ano: data.ano || new Date().getFullYear(),
+          preco: Number(data.preco || 0),
+          descricao: data.descricao || '',
+          tipo: data.tipo || 'carro',
+          promocao: data.promocao || false,
+          estoque: data.estoque || 1,
+          fotos: data.fotos || []
+        });
+      } else {
+        toast.error('Veículo não encontrado.');
+        router.push('/admin/veiculos');
+      }
     } catch (e) {
       console.error(e);
       toast.error('Erro ao carregar os dados do veículo.');
@@ -59,28 +76,33 @@ export default function VehicleFormPage() {
     setSaving(true);
 
     try {
-      const url = isEdit ? `/api/vehicles/${id}` : '/api/vehicles';
-      const method = isEdit ? 'PUT' : 'POST';
+      const { db } = await import('@/lib/firebase');
+      const { collection, addDoc, doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
 
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
-        },
-        body: JSON.stringify(formData)
-      });
+      const vehicleData = {
+        ...formData,
+        preco: Number(formData.preco),
+        updated_at: serverTimestamp()
+      };
 
-      if (res.ok) {
-        toast.success(isEdit ? 'Veículo atualizado com sucesso!' : 'Veículo cadastrado com sucesso!');
-        router.push('/admin/veiculos');
+      if (isEdit) {
+         if (!id) throw new Error("ID inválido");
+         const vehicleRef = doc(db, 'vehicles', id as string);
+         await updateDoc(vehicleRef, vehicleData);
+         toast.success('Veículo atualizado com sucesso!');
       } else {
-        const err = await res.json();
-        toast.error(err.message || 'Houve um problema ao salvar os dados.');
+         const vehiclesRef = collection(db, 'vehicles');
+         await addDoc(vehiclesRef, {
+            ...vehicleData,
+            created_at: serverTimestamp()
+         });
+         toast.success('Veículo cadastrado com sucesso!');
       }
-    } catch (e) {
+
+      router.push('/admin/veiculos');
+    } catch (e: any) {
       console.error(e);
-      toast.error('Erro de conexão com o servidor.');
+      toast.error('Erro ao salvar os dados: ' + e.message);
     } finally {
       setSaving(false);
     }
