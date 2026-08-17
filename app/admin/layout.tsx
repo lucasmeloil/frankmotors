@@ -4,14 +4,33 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, Bike, Users, LogOut, Menu, X, Globe, BarChart2, Sparkles } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Bike, 
+  Users, 
+  LogOut, 
+  Menu, 
+  X, 
+  Globe, 
+  BarChart2, 
+  ChevronRight, 
+  ChevronDown,
+  ShieldCheck,
+  Sparkles
+} from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [adminUser, setAdminUser] = useState<{ name: string; email: string; initials: string } | null>(null);
+
+  // Close mobile menu whenever pathname changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname.includes('/login')) return;
@@ -53,6 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     } catch (e) { /* ignore */ }
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_user');
+    setIsMobileMenuOpen(false);
     router.push('/admin/login');
   };
 
@@ -60,28 +80,191 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!isAuthenticated) return null;
 
   const menuItems = [
-    { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
-    { label: 'Veículos / Motos', icon: Bike, path: '/admin/veiculos' },
-    { label: 'Relatórios', icon: BarChart2, path: '/admin/relatorios' },
-    { label: 'Usuários', icon: Users, path: '/admin/usuarios' },
+    { label: 'Dashboard', icon: LayoutDashboard, path: '/admin', desc: 'Resumo geral e financeiro' },
+    { label: 'Veículos / Motos', icon: Bike, path: '/admin/veiculos', desc: 'Estoque, cadastro e vendas' },
+    { label: 'Relatórios', icon: BarChart2, path: '/admin/relatorios', desc: 'Fluxo de caixa e lucros' },
+    { label: 'Usuários', icon: Users, path: '/admin/usuarios', desc: 'Gestão de administradores' },
   ];
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar Overlay (Mobile) */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[45] md:hidden transition-opacity print:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
+  const currentItem = menuItems.find(i => i.path === pathname) || { label: 'Painel Admin', icon: LayoutDashboard, desc: '' };
 
-      {/* Sidebar */}
+  return (
+    <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row font-sans text-slate-900">
+      
+      {/* ========================================================================= */}
+      {/* 📱 MOBILE TOP NAVBAR WITH DROP-DOWN MENU (Desce de cima para baixo) */}
+      {/* ========================================================================= */}
+      <div className="md:hidden sticky top-0 z-50 bg-[#06101e] border-b border-sky-900/40 text-white shadow-xl print:hidden">
+        <div className="flex items-center justify-between px-4 py-3">
+          {/* Brand / Logo */}
+          <Link href="/admin" className="flex items-center space-x-2.5 group">
+            <div className="relative w-32 h-9 flex-shrink-0">
+              <Image 
+                src="/assets/logo-babymotos-transparent.png" 
+                alt="Baby Motos" 
+                fill 
+                className="object-contain filter drop-shadow-[0_2px_8px_rgba(0,166,255,0.5)]" 
+                priority
+              />
+            </div>
+            <span className="bg-sky-500/20 text-sky-300 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-sky-400/30">
+              Admin
+            </span>
+          </Link>
+
+          {/* Right Actions: User Badge + Menu Button */}
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center font-black text-white text-xs shadow-md shadow-sky-500/30">
+              {adminUser?.initials || 'BM'}
+            </div>
+
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`p-2.5 rounded-xl transition-all flex items-center justify-center cursor-pointer ${
+                isMobileMenuOpen 
+                  ? 'bg-sky-500 text-white ring-2 ring-sky-300' 
+                  : 'bg-white/10 text-sky-400 hover:bg-white/20 active:scale-95'
+              }`}
+              aria-label="Abrir menu de navegação"
+              aria-expanded={isMobileMenuOpen}
+            >
+              {isMobileMenuOpen ? (
+                <X size={22} className="text-white animate-spin-once" />
+              ) : (
+                <Menu size={22} />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Current Active Page Mobile Sub-bar */}
+        <div className="px-4 py-1.5 bg-[#0b192c] border-t border-white/5 flex items-center justify-between text-xs">
+          <div className="flex items-center space-x-2 text-sky-400">
+            <currentItem.icon size={14} />
+            <span className="font-black uppercase tracking-wider text-[11px] text-white">
+              {currentItem.label}
+            </span>
+          </div>
+          <span className="text-[10px] text-slate-400 font-medium">
+            {adminUser?.name || 'Administrador'}
+          </span>
+        </div>
+
+        {/* 🔻 TOP-TO-BOTTOM DROPDOWN MENU PANEL 🔻 */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-x-0 top-[88px] z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 min-h-[calc(100vh-88px)]"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <div 
+              className="bg-[#06101e] border-b border-sky-500/30 shadow-2xl overflow-hidden rounded-b-3xl animate-in slide-in-from-top duration-300"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* User Profile Banner in Dropdown */}
+              <div className="p-4 bg-gradient-to-r from-sky-950/80 to-[#0b192c] border-b border-white/10 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md shadow-sky-500/40">
+                    {adminUser?.initials || 'BM'}
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-white uppercase">{adminUser?.name || 'Administrador'}</p>
+                    <p className="text-[10px] text-sky-300 truncate max-w-[200px]">{adminUser?.email || 'admin@babymotos.com'}</p>
+                  </div>
+                </div>
+                <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-1 rounded-full">
+                  <ShieldCheck size={12} /> Online
+                </span>
+              </div>
+
+              {/* Navigation Options List */}
+              <div className="p-4 space-y-2 max-h-[calc(100vh-250px)] overflow-y-auto">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 pt-1 pb-1">
+                  Menu Principal
+                </p>
+                {menuItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.path;
+                  return (
+                    <Link
+                      key={item.path}
+                      href={item.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center justify-between p-3.5 rounded-2xl transition-all ${
+                        isActive
+                          ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30 font-black'
+                          : 'bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3.5">
+                        <div className={`p-2 rounded-xl ${isActive ? 'bg-white/20 text-white' : 'bg-white/5 text-sky-400'}`}>
+                          <Icon size={20} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-black uppercase tracking-wider">{item.label}</p>
+                          <p className={`text-[10px] ${isActive ? 'text-sky-100' : 'text-slate-400'}`}>{item.desc}</p>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} className={isActive ? 'text-white' : 'text-slate-500'} />
+                    </Link>
+                  );
+                })}
+
+                <div className="pt-3 border-t border-white/10 space-y-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 pb-1">
+                    Acesso Rápido
+                  </p>
+                  
+                  {/* Public Site Link */}
+                  <Link
+                    href="/"
+                    target="_blank"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/20 transition-all"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300">
+                        <Globe size={18} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-wider">Ver Site Público</p>
+                        <p className="text-[10px] text-emerald-200/70">Acessar vitrine pública da loja</p>
+                      </div>
+                    </div>
+                    <ChevronRight size={16} className="text-emerald-400" />
+                  </Link>
+
+                  {/* Sign Out Button */}
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full flex items-center justify-between p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-300 hover:bg-red-500/20 transition-all cursor-pointer text-left"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 rounded-xl bg-red-500/20 text-red-300">
+                        <LogOut size={18} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-wider">Sair do Painel</p>
+                        <p className="text-[10px] text-red-200/70">Desconectar sessão admin</p>
+                      </div>
+                    </div>
+                    <ChevronRight size={16} className="text-red-400" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 🖥️ DESKTOP SIDEBAR (Apenas em telas md: ou maiores) */}
+      {/* ========================================================================= */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-50 bg-primary text-white transition-all duration-500 ease-in-out flex flex-col shadow-2xl print:hidden
-          ${isSidebarOpen ? 'w-72 translate-x-0' : 'w-72 md:w-24 -translate-x-full md:translate-x-0'}
+        className={`hidden md:flex fixed inset-y-0 left-0 z-50 bg-[#06101e] text-white transition-all duration-500 ease-in-out flex-col shadow-2xl print:hidden border-r border-sky-950/40
+          ${isSidebarOpen ? 'w-72' : 'w-24'}
         `}
       >
+        {/* Sidebar Brand Header */}
         <div className="p-4 h-24 flex items-center justify-between border-b border-white/5 bg-black/20">
           <Link href="/admin" className={`flex items-center space-x-3 transition-opacity duration-300 ${!isSidebarOpen ? 'opacity-0 invisible w-0' : 'opacity-100 visible'}`}>
             <div className="relative w-44 h-12 flex-shrink-0 group/side-logo">
@@ -97,15 +280,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-            className={`p-2 hover:bg-white/10 rounded-xl transition-all ${!isSidebarOpen ? 'mx-auto' : ''}`}
+            className={`p-2 hover:bg-white/10 rounded-xl transition-all cursor-pointer ${!isSidebarOpen ? 'mx-auto' : ''}`}
             title={isSidebarOpen ? "Recolher menu" : "Expandir menu"}
           >
-            {isSidebarOpen ? <X size={22} className="text-gray-400 hover:text-white" /> : <Menu size={22} className="text-sky-400" />}
+            {isSidebarOpen ? <X size={20} className="text-gray-400 hover:text-white" /> : <Menu size={22} className="text-sky-400" />}
           </button>
         </div>
 
-        <nav className="flex-1 py-8 px-4 flex flex-col justify-between overflow-y-auto">
-          <ul className="space-y-3">
+        {/* Sidebar Navigation */}
+        <nav className="flex-1 py-6 px-4 flex flex-col justify-between overflow-y-auto">
+          <ul className="space-y-2.5">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.path;
@@ -132,13 +316,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </ul>
         </nav>
 
-        <div className="p-6 border-t border-white/5 space-y-4">
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-white/5 space-y-2">
           <Link 
             href="/"
-            className={`flex items-center p-4 text-emerald-400 hover:text-white hover:bg-emerald-500/20 w-full rounded-2xl transition-all group ${!isSidebarOpen ? 'justify-center' : ''}`}
+            target="_blank"
+            className={`flex items-center p-3 text-emerald-400 hover:text-white hover:bg-emerald-500/20 w-full rounded-2xl transition-all group ${!isSidebarOpen ? 'justify-center' : ''}`}
+            title="Ver Site Público"
           >
-            <Globe size={22} className="group-hover:rotate-12 transition-transform" />
-            <span className={`ml-4 font-black text-xs uppercase tracking-widest transition-all duration-300 ${
+            <Globe size={20} className="group-hover:rotate-12 transition-transform flex-shrink-0" />
+            <span className={`ml-3 font-black text-xs uppercase tracking-widest transition-all duration-300 ${
               !isSidebarOpen ? 'opacity-0 invisible w-0' : 'opacity-100 visible'
             }`}>
               Ver Site Público
@@ -147,10 +334,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <button 
             onClick={handleSignOut}
-            className={`flex items-center p-4 text-red-400 hover:text-white hover:bg-red-500/20 w-full rounded-2xl transition-all group ${!isSidebarOpen ? 'justify-center' : ''}`}
+            className={`flex items-center p-3 text-red-400 hover:text-white hover:bg-red-500/20 w-full rounded-2xl transition-all group cursor-pointer ${!isSidebarOpen ? 'justify-center' : ''}`}
+            title="Sair do Painel"
           >
-            <LogOut size={22} className="group-hover:-translate-x-1 transition-transform" />
-            <span className={`ml-4 font-black text-xs uppercase tracking-widest transition-all duration-300 ${
+            <LogOut size={20} className="group-hover:-translate-x-1 transition-transform flex-shrink-0" />
+            <span className={`ml-3 font-black text-xs uppercase tracking-widest transition-all duration-300 ${
               !isSidebarOpen ? 'opacity-0 invisible w-0' : 'opacity-100 visible'
             }`}>
               Sair do Painel
@@ -159,25 +347,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className={`flex-1 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'md:ml-72' : 'md:ml-24'} ml-0 print:!ml-0 print:!p-0 print:!bg-white`}>
-        <header className="bg-white h-20 border-b border-gray-200 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40 shadow-sm print:hidden">
+      {/* ========================================================================= */}
+      {/* 📄 MAIN CONTENT AREA (Com margens responsivas no mobile) */}
+      {/* ========================================================================= */}
+      <main className={`flex-1 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'md:ml-72' : 'md:ml-24'} ml-0 print:!ml-0 print:!p-0 print:!bg-white min-w-0`}>
+        
+        {/* Desktop Header */}
+        <header className="hidden md:flex bg-white h-20 border-b border-gray-200 items-center justify-between px-8 sticky top-0 z-40 shadow-sm print:hidden">
           <div className="flex items-center space-x-4">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 hover:bg-gray-100 rounded-xl transition-all text-primary"
+              className="p-2 hover:bg-gray-100 rounded-xl transition-all text-primary cursor-pointer"
+              title="Expandir/recolher menu"
             >
-              <Menu size={24} />
+              <Menu size={22} />
             </button>
-            <h2 className="font-heading text-lg md:text-xl font-black text-primary uppercase truncate max-w-[150px] md:max-w-none">
-              {menuItems.find(i => i.path === pathname)?.label || 'Painel Admin'}
-            </h2>
+            <div>
+              <h2 className="font-heading text-xl font-black text-primary uppercase">
+                {currentItem.label}
+              </h2>
+              {currentItem.desc && (
+                <p className="text-xs text-gray-400 font-medium">{currentItem.desc}</p>
+              )}
+            </div>
           </div>
           
-          <div className="flex items-center space-x-3 md:space-x-4">
-            <div className="hidden sm:flex flex-col items-end mr-2">
+          <div className="flex items-center space-x-4">
+            <div className="flex flex-col items-end">
               <span className="text-xs font-black text-primary uppercase">{adminUser?.name || 'Admin'}</span>
-              <span className="text-[10px] font-bold text-sky-600 uppercase tracking-tighter">{adminUser?.email || 'Administrador'}</span>
+              <span className="text-[10px] font-bold text-sky-600 uppercase tracking-tight">{adminUser?.email || 'Administrador'}</span>
             </div>
             <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center font-black text-white shadow-lg shadow-sky-500/20 text-sm">
               {adminUser?.initials || 'BM'}
@@ -185,10 +383,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
 
-        <div className="p-8 print:!p-0">
+        {/* Content Container — Responsivo para Mobile (p-3 sm:p-6 md:p-8) */}
+        <div className="p-3 sm:p-6 md:p-8 print:!p-0 max-w-7xl mx-auto w-full">
           {children}
         </div>
       </main>
     </div>
   );
 }
+

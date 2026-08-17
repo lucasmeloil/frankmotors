@@ -119,20 +119,20 @@ export default function AdminVehiclesPage() {
   return (
     <div className="space-y-6 pb-20">
       {/* Header Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col sm:flex-row gap-3 flex-1 max-w-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 flex-1 max-w-2xl">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3.5 text-gray-400" size={18} />
+            <Search className="absolute left-3.5 top-3.5 text-gray-400" size={18} />
             <input 
               type="text" 
               placeholder="Pesquisar por modelo ou marca..." 
-              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 transition-all text-sm outline-none font-medium"
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-sky-500 transition-all text-sm outline-none font-medium"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <select 
-            className="px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 font-bold text-xs uppercase tracking-wider outline-none text-gray-600"
+            className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-sky-500 font-bold text-xs uppercase tracking-wider outline-none text-gray-600 cursor-pointer"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -143,45 +143,159 @@ export default function AdminVehiclesPage() {
           </select>
         </div>
         
-        <Link href="/admin/veiculos/novo">
-          <button className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-sky-500/25 transition-all text-sm uppercase tracking-wider">
+        <Link href="/admin/veiculos/novo" className="w-full sm:w-auto">
+          <button className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-sky-500/25 transition-all text-xs sm:text-sm uppercase tracking-wider cursor-pointer">
             <Plus size={18} />
             <span>Adicionar Veículo</span>
           </button>
         </Link>
       </div>
 
-      {/* Vehicles Table */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-50/80 border-b border-gray-100 text-gray-400">
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Veículo & Cor</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Ano/Tipo</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Custo (Compra)</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Venda (Público)</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Lucro Estimado</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50 text-sm">
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400 font-medium">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-sky-500 mx-auto mb-2"></div>
-                    Carregando veículos da Baby Motos...
-                  </td>
+      {/* Loading state */}
+      {loading && (
+        <div className="bg-white rounded-3xl p-12 text-center text-gray-400 font-medium shadow-sm border border-gray-100">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-sky-500 mx-auto mb-3"></div>
+          Carregando veículos da Baby Motos...
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!loading && filteredVehicles.length === 0 && (
+        <div className="bg-white rounded-3xl p-12 text-center text-gray-400 font-medium shadow-sm border border-gray-100">
+          <Bike size={44} className="mx-auto mb-3 opacity-25 text-sky-500" />
+          <p className="text-sm font-bold text-gray-700">Nenhum veículo encontrado no sistema.</p>
+          <p className="text-xs mt-1 text-gray-400">Clique no botão <strong>+ Adicionar Veículo</strong> acima para cadastrar a primeira moto!</p>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 📱 MOBILE CARD VIEW (Aparece somente em telas mobile < md) */}
+      {/* ========================================================================= */}
+      {!loading && filteredVehicles.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 md:hidden">
+          {filteredVehicles.map((vehicle) => {
+            const custo = Number(vehicle.precoCusto || 0);
+            const venda = Number(vehicle.preco || 0);
+            const lucro = venda - custo;
+            const status = vehicle.status || 'disponivel';
+
+            return (
+              <div 
+                key={`mobile-${vehicle.id}`} 
+                className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 space-y-3.5 hover:shadow-md transition-shadow"
+              >
+                {/* Header: Photo + Info + Status */}
+                <div className="flex items-center space-x-3.5">
+                  <div className="relative w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-100">
+                    <Image 
+                      src={vehicle.fotos?.[0]?.url || '/assets/placeholder-vehicle.jpg'} 
+                      alt={vehicle.modelo || 'Veículo'} 
+                      fill 
+                      className="object-cover" 
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1 mb-1">
+                      <span className="text-[10px] text-sky-600 font-black uppercase tracking-wider truncate">
+                        {vehicle.marca} • {vehicle.ano}
+                      </span>
+                      {status === 'vendido' ? (
+                        <span className="px-2 py-0.5 bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-wider rounded-full border border-red-100 flex-shrink-0">
+                          🔴 Vendido
+                        </span>
+                      ) : status === 'reservado' ? (
+                        <span className="px-2 py-0.5 bg-amber-50 text-amber-600 text-[9px] font-black uppercase tracking-wider rounded-full border border-amber-100 flex-shrink-0">
+                          🟡 Reservado
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-wider rounded-full border border-emerald-100 flex-shrink-0">
+                          ✅ Disponível
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-black text-gray-900 text-sm truncate">{vehicle.modelo}</p>
+                    <p className="text-[11px] text-gray-400 font-bold">{vehicle.cor || 'Cor padrão'}</p>
+                  </div>
+                </div>
+
+                {/* Financial details pill */}
+                <div className="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-100 text-center">
+                  <div>
+                    <span className="text-[9px] font-black uppercase text-gray-400 tracking-tight block">Custo (Compra)</span>
+                    <span className="text-xs font-bold text-red-500 truncate block">R$ {fmt(custo)}</span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-black uppercase text-gray-400 tracking-tight block">Venda Público</span>
+                    <span className="text-xs font-black text-gray-900 truncate block">R$ {fmt(venda)}</span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-black uppercase text-gray-400 tracking-tight block">Lucro Previsto</span>
+                    <span className={`text-xs font-black truncate block ${lucro >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                      {lucro >= 0 ? '+' : ''}R$ {fmt(lucro)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Mobile Actions Bar */}
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-gray-100">
+                  {status !== 'vendido' ? (
+                    <button
+                      onClick={() => handleOpenSaleModal(vehicle)}
+                      className="flex-1 py-2 px-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                    >
+                      <DollarSign size={14} />
+                      <span>$ Vender</span>
+                    </button>
+                  ) : (
+                    <span className="text-[11px] font-bold text-gray-400 italic">Venda Registrada</span>
+                  )}
+
+                  <div className="flex items-center space-x-1">
+                    <Link href={`/veiculos/${vehicle.id}`} target="_blank">
+                      <button className="p-2 text-gray-500 hover:text-sky-500 bg-gray-50 hover:bg-sky-50 rounded-xl transition-all" title="Ver no site público">
+                        <ExternalLink size={16} />
+                      </button>
+                    </Link>
+                    <Link href={`/admin/veiculos/editar/${vehicle.id}`}>
+                      <button className="p-2 text-gray-500 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 rounded-xl transition-all" title="Editar veículo">
+                        <Edit2 size={16} />
+                      </button>
+                    </Link>
+                    <button 
+                      onClick={() => handleDelete(vehicle.id || '', `${vehicle.marca} ${vehicle.modelo}`)}
+                      className="p-2 text-gray-500 hover:text-red-600 bg-gray-50 hover:bg-red-50 rounded-xl transition-all" 
+                      title="Excluir"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 🖥️ DESKTOP TABLE VIEW (Oculto no mobile, exibido em md: ou maior) */}
+      {/* ========================================================================= */}
+      {!loading && filteredVehicles.length > 0 && (
+        <div className="hidden md:block bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-gray-50/80 border-b border-gray-100 text-gray-400">
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Veículo & Cor</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Ano/Tipo</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Custo (Compra)</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Venda (Público)</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Lucro Estimado</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Status</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Ações</th>
                 </tr>
-              ) : filteredVehicles.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400 font-medium whitespace-pre-line">
-                    Nenhum veículo encontrado no sistema.{"\n"}Clique em "Adicionar Veículo" para começar!
-                  </td>
-                </tr>
-              ) : (
-                filteredVehicles.map((vehicle) => {
+              </thead>
+              <tbody className="divide-y divide-gray-50 text-sm">
+                {filteredVehicles.map((vehicle) => {
                   const custo = Number(vehicle.precoCusto || 0);
                   const venda = Number(vehicle.preco || 0);
                   const lucro = venda - custo;
@@ -243,11 +357,10 @@ export default function AdminVehiclesPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end space-x-2">
-                          {/* Botão de Vender Rápido se não vendido */}
                           {status !== 'vendido' && (
                             <button
                               onClick={() => handleOpenSaleModal(vehicle)}
-                              className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-black uppercase tracking-wider flex items-center gap-1 shadow-sm transition-all"
+                              className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-black uppercase tracking-wider flex items-center gap-1 shadow-sm transition-all cursor-pointer"
                               title="Registrar Venda Deste Veículo"
                             >
                               <DollarSign size={13} />
@@ -267,7 +380,7 @@ export default function AdminVehiclesPage() {
                           </Link>
                           <button 
                             onClick={() => handleDelete(vehicle.id || '', `${vehicle.marca} ${vehicle.modelo}`)}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" 
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer" 
                             title="Excluir"
                           >
                             <Trash2 size={16} />
@@ -276,30 +389,30 @@ export default function AdminVehiclesPage() {
                       </td>
                     </tr>
                   );
-                })
-              )}
-            </tbody>
-          </table>
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Modal de Registro de Venda */}
+      {/* Modal de Registro de Venda (Responsivo) */}
       {selectedVehicleForSale && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl space-y-6 border border-gray-100 animate-slide-up">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white w-full max-w-lg rounded-3xl p-5 sm:p-8 shadow-2xl space-y-5 sm:space-y-6 border border-gray-100 animate-slide-up max-h-[95vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3.5">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
                   <DollarSign size={22} />
                 </div>
                 <div>
-                  <h3 className="font-heading font-black text-lg text-primary uppercase">Registrar Venda</h3>
+                  <h3 className="font-heading font-black text-base sm:text-lg text-primary uppercase">Registrar Venda</h3>
                   <p className="text-xs text-gray-400 font-bold">{selectedVehicleForSale.marca} {selectedVehicleForSale.modelo} ({selectedVehicleForSale.ano})</p>
                 </div>
               </div>
               <button 
                 onClick={() => setSelectedVehicleForSale(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all cursor-pointer"
               >
                 <X size={20} />
               </button>
@@ -354,18 +467,18 @@ export default function AdminVehiclesPage() {
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-end space-x-3">
+              <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setSelectedVehicleForSale(null)}
-                  className="px-5 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-black uppercase tracking-wider transition-all"
+                  className="px-5 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-black uppercase tracking-wider transition-all text-center cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={selling}
-                  className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black uppercase tracking-wider shadow-lg shadow-emerald-500/30 transition-all flex items-center space-x-2"
+                  className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black uppercase tracking-wider shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
                 >
                   {selling ? (
                     <span>Registrando...</span>

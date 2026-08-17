@@ -186,63 +186,63 @@ export default function RelatoriosPage() {
         }
       `}</style>
 
-      <div id="relatorio-print" className="space-y-6 pb-20 pt-2 bg-white">
+      <div id="relatorio-print" className="space-y-5 sm:space-y-6 pb-20 pt-2 bg-white">
         
         {/* Painel Superior de Ações (Apenas na Tela - Oculto na Impressão) */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 no-print bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 no-print bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100">
           <div>
-            <h1 className="font-heading text-2xl font-black text-primary uppercase flex items-center gap-2">
-              <Building2 size={26} className="text-sky-500" /> Relatório Financeiro Preciso — Baby Motos
+            <h1 className="font-heading text-lg sm:text-2xl font-black text-primary uppercase flex items-center gap-2">
+              <Building2 size={24} className="text-sky-500 flex-shrink-0" /> Relatório Financeiro Baby Motos
             </h1>
-            <p className="text-xs text-gray-400 font-bold mt-1 uppercase tracking-wider">
+            <p className="text-[11px] sm:text-xs text-gray-400 font-bold mt-1 uppercase tracking-wider">
               Cálculo exato por veículo unitário e acumulado total do estoque e vendas
             </p>
           </div>
           <button
             onClick={handlePrint}
-            className="flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-sky-500/30 transition-all active:scale-95 cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-sky-500/30 transition-all active:scale-95 cursor-pointer text-center"
           >
             <Printer size={18} />
             <span>Imprimir / Baixar PDF</span>
           </button>
         </div>
 
-        {/* Seleção de Abas de Visualização (Tela) */}
-        <div className="flex flex-wrap gap-2.5 no-print">
+        {/* Seleção de Abas de Visualização (Tela - Responsivo com Scroll Horizontal) */}
+        <div className="flex flex-wrap sm:flex-nowrap gap-2 no-print overflow-x-auto pb-1">
           <button
             onClick={() => setTipoVisualizacao('completo')}
-            className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-sm cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl font-black text-[11px] sm:text-xs uppercase tracking-wider transition-all shadow-sm cursor-pointer whitespace-nowrap ${
               tipoVisualizacao === 'completo'
                 ? 'bg-primary text-white shadow-lg ring-2 ring-sky-400'
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
-            <FileText size={16} />
-            <span>📋 Relatório Geral Completo</span>
+            <FileText size={15} />
+            <span>📋 Geral Completo</span>
           </button>
 
           <button
             onClick={() => setTipoVisualizacao('estoque')}
-            className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-sm cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl font-black text-[11px] sm:text-xs uppercase tracking-wider transition-all shadow-sm cursor-pointer whitespace-nowrap ${
               tipoVisualizacao === 'estoque'
                 ? 'bg-sky-600 text-white shadow-sky-600/30 ring-2 ring-sky-400'
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
-            <Layers size={16} />
-            <span>🏍️ Somente Estoque no Pátio ({totalUnidadesEstoque} un)</span>
+            <Layers size={15} />
+            <span>🏍️ Estoque ({totalUnidadesEstoque} un)</span>
           </button>
 
           <button
             onClick={() => setTipoVisualizacao('vendas')}
-            className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-sm cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl font-black text-[11px] sm:text-xs uppercase tracking-wider transition-all shadow-sm cursor-pointer whitespace-nowrap ${
               tipoVisualizacao === 'vendas'
                 ? 'bg-emerald-600 text-white shadow-emerald-600/30 ring-2 ring-emerald-400'
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
-            <DollarSign size={16} />
-            <span>💰 Somente Vendas ({vendas.length})</span>
+            <DollarSign size={15} />
+            <span>💰 Vendas ({vendas.length})</span>
           </button>
         </div>
 

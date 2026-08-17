@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,24 +20,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Nenhum arquivo enviado' }, { status: 400 });
     }
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
     const uploadedUrls: string[] = [];
 
     for (const file of files) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
+      const mimeType = file.type || 'image/jpeg';
 
-      const ext = path.extname(file.name) || '.jpg';
-      const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 20);
-      const fileName = `moto_${Date.now()}_${cleanName}${ext}`;
-      const filePath = path.join(uploadDir, fileName);
-
-      fs.writeFileSync(filePath, buffer);
-      uploadedUrls.push(`/uploads/${fileName}`);
+      try {
+        // Try uploading to Firebase Storage
+        const ext = file.name.split('.').pop() || 'jpg';
+        const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 15);
+        const storageRef = ref(storage, `vehicles/${Date.now()}_${cleanName}.${ext}`);
+        const snapshot = await uploadBytes(storageRef, buffer, { contentType: mimeType });
+        const downloadUrl = await getDownloadURL(snapshot.ref);
+        uploadedUrls.push(downloadUrl);
+      } catch (storageErr) {
+        console.warn('Firebase Storage fallback to Data URL:', storageErr);
+        // Fallback: Data URL that works without writing to serverless filesystem
+        const base64 = buffer.toString('base64');
+        const dataUrl = `data:${mimeType};base64,${base64}`;
+        uploadedUrls.push(dataUrl);
+      }
     }
 
     return NextResponse.json({

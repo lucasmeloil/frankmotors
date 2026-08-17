@@ -74,28 +74,28 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="space-y-6 sm:space-y-8 max-w-5xl mx-auto pb-16">
+      <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
         {/* Create User Form */}
-        <div className="md:w-1/3">
-          <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6 sticky top-24">
+        <div className="lg:w-1/3">
+          <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-gray-100 space-y-5 lg:sticky lg:top-24">
             <div className="flex items-center space-x-2 text-primary">
-              <UserPlus size={20} />
-              <h3 className="font-heading font-black uppercase tracking-widest text-sm">Novo Admin</h3>
+              <UserPlus size={20} className="text-sky-500" />
+              <h3 className="font-heading font-black uppercase tracking-widest text-xs sm:text-sm">Novo Admin</h3>
             </div>
 
             <form onSubmit={handleCreateUser} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">E-mail</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 text-gray-300" size={16} />
+                  <Mail className="absolute left-3.5 top-3.5 text-gray-400" size={16} />
                   <input 
                     type="email" 
                     required
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-secondary rounded-xl text-sm transition-all"
-                    placeholder="lucas@nexus.com"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-sky-500 rounded-xl text-sm transition-all outline-none font-medium"
+                    placeholder="admin@babymotos.com"
                   />
                 </div>
               </div>
@@ -103,13 +103,13 @@ export default function UsersPage() {
               <div className="space-y-1">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Senha</label>
                 <div className="relative">
-                  <Shield className="absolute left-3 top-3 text-gray-300" size={16} />
+                  <Shield className="absolute left-3.5 top-3.5 text-gray-400" size={16} />
                   <input 
                     type="password" 
                     required
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-secondary rounded-xl text-sm transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-sky-500 rounded-xl text-sm transition-all outline-none font-medium"
                     placeholder="••••••••"
                   />
                 </div>
@@ -117,15 +117,15 @@ export default function UsersPage() {
 
               <button 
                 type="submit"
-                className="w-full py-3 bg-primary hover:bg-black text-white rounded-xl font-black uppercase tracking-widest text-xs transition-all shadow-lg"
+                className="w-full py-3.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white rounded-xl font-black uppercase tracking-widest text-xs transition-all shadow-lg shadow-sky-500/25 cursor-pointer"
               >
                 CRIAR ADMINISTRADOR
               </button>
             </form>
 
             {message.text && (
-              <div className={`p-4 rounded-xl flex items-start space-x-2 text-xs font-bold ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
-                {message.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
+              <div className={`p-4 rounded-2xl flex items-start space-x-2 text-xs font-bold ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
+                {message.type === 'success' ? <CheckCircle size={16} className="shrink-0 mt-0.5" /> : <AlertCircle size={16} className="shrink-0 mt-0.5" />}
                 <span>{message.text}</span>
               </div>
             )}
@@ -133,10 +133,10 @@ export default function UsersPage() {
         </div>
 
         {/* Users List */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-6 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
-              <h3 className="font-heading font-black uppercase tracking-widest text-sm text-primary">Usuários Cadastrados</h3>
+            <div className="p-5 sm:p-6 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+              <h3 className="font-heading font-black uppercase tracking-widest text-xs sm:text-sm text-primary">Usuários Cadastrados</h3>
               <span className="bg-white px-3 py-1 rounded-full text-[10px] font-black text-gray-400 border border-gray-100">{users.length} TOTAL</span>
             </div>
 
@@ -147,25 +147,26 @@ export default function UsersPage() {
                 <div className="p-12 text-center text-gray-400">Nenhum usuário encontrado.</div>
               ) : (
                 users.map((user) => (
-                  <div key={user.id} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center font-black text-primary text-xs uppercase">
+                  <div key={user.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center space-x-3.5 min-w-0">
+                      <div className="w-10 h-10 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center font-black text-xs uppercase shrink-0">
                         {user.email.substring(0, 2)}
                       </div>
-                      <div>
-                        <p className="font-bold text-primary">{user.email}</p>
+                      <div className="min-w-0">
+                        <p className="font-bold text-gray-900 text-sm truncate">{user.email}</p>
                         <div className="flex items-center space-x-2 mt-0.5">
-                          <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${user.role === 'admin' ? 'bg-red-50 text-secondary border border-red-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
+                          <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${user.role === 'admin' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
                             {user.role}
                           </span>
-                          <span className="text-[9px] text-gray-400 font-medium">Criado em {new Date(user.created_at).toLocaleDateString('pt-BR')}</span>
+                          <span className="text-[10px] text-gray-400 font-medium">Criado em {new Date(user.created_at).toLocaleDateString('pt-BR')}</span>
                         </div>
                       </div>
                     </div>
                     {user.email !== 'lucasmelo@nexus.com' && (
                       <button 
                         onClick={() => handleDeleteUser(user.id)}
-                        className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        className="self-end sm:self-auto p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                        title="Excluir Administrador"
                       >
                         <Trash2 size={18} />
                       </button>

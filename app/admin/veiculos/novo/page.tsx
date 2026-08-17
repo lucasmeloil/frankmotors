@@ -200,27 +200,27 @@ export default function VehicleFormPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-20">
+    <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <button 
           onClick={() => router.back()} 
           type="button"
-          className="flex items-center text-gray-500 hover:text-primary transition-colors font-bold text-sm"
+          className="flex items-center text-gray-500 hover:text-primary transition-colors font-bold text-xs sm:text-sm cursor-pointer"
         >
           <ArrowLeft className="mr-2" size={18} /> Voltar para a lista
         </button>
-        <h1 className="font-heading text-2xl font-black text-primary uppercase">
+        <h1 className="font-heading text-xl sm:text-2xl font-black text-primary uppercase">
           {isEdit ? 'Editar Veículo' : 'Novo Veículo'}
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
         {/* Informações Básicas */}
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+        <div className="bg-white p-5 sm:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-5 sm:space-y-6">
           <div className="flex items-center space-x-2 text-sky-500">
             <Bike size={22} />
-            <h3 className="font-heading font-black uppercase tracking-widest text-sm">Informações Básicas</h3>
+            <h3 className="font-heading font-black uppercase tracking-widest text-xs sm:text-sm">Informações Básicas</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
@@ -286,13 +286,13 @@ export default function VehicleFormPage() {
         </div>
 
         {/* Preços — Seção Financeira */}
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+        <div className="bg-white p-5 sm:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-5 sm:space-y-6">
           <div className="flex items-center space-x-2 text-sky-500">
             <DollarSign size={20} />
-            <h3 className="font-heading font-black uppercase tracking-widest text-sm">Preços e Margem</h3>
+            <h3 className="font-heading font-black uppercase tracking-widest text-xs sm:text-sm">Preços e Margem</h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Preço de Custo — Interno */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -344,17 +344,17 @@ export default function VehicleFormPage() {
 
           {/* Lucro estimado em tempo real */}
           {formData.precoCusto > 0 && formData.preco > 0 && (
-            <div className={`p-5 rounded-2xl border-2 transition-all ${lucroEstimado >= 0 ? 'bg-emerald-50/80 border-emerald-200' : 'bg-red-50/80 border-red-200'}`}>
+            <div className={`p-4 sm:p-5 rounded-2xl border-2 transition-all ${lucroEstimado >= 0 ? 'bg-emerald-50/80 border-emerald-200' : 'bg-red-50/80 border-red-200'}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Lucro Bruto por Veículo</p>
-                  <p className={`text-2xl font-black ${lucroEstimado >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <p className={`text-xl sm:text-2xl font-black ${lucroEstimado >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     {lucroEstimado >= 0 ? '+' : ''}R$ {lucroEstimado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Margem Comercial</p>
-                  <p className={`text-2xl font-black ${margemEstimada >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <p className={`text-xl sm:text-2xl font-black ${margemEstimada >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     {margemEstimada.toFixed(1)}%
                   </p>
                 </div>
@@ -364,13 +364,13 @@ export default function VehicleFormPage() {
         </div>
 
         {/* Status e Venda */}
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+        <div className="bg-white p-5 sm:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-5 sm:space-y-6">
           <div className="flex items-center space-x-2 text-sky-500">
             <ShoppingCart size={20} />
-            <h3 className="font-heading font-black uppercase tracking-widest text-sm">Status e Disponibilidade</h3>
+            <h3 className="font-heading font-black uppercase tracking-widest text-xs sm:text-sm">Status e Disponibilidade</h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-2">
               <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Status do Veículo</label>
               <select
@@ -400,8 +400,8 @@ export default function VehicleFormPage() {
 
           {/* Campos de venda quando marcado como vendido */}
           {formData.status === 'vendido' && (
-            <div className="p-6 bg-red-50 border-2 border-red-100 rounded-2xl space-y-4 animate-fade-in">
-              <p className="text-sm font-black text-red-700 uppercase tracking-wider">📋 Dados do Registro de Venda</p>
+            <div className="p-4 sm:p-6 bg-red-50 border-2 border-red-100 rounded-2xl space-y-4 animate-fade-in">
+              <p className="text-xs sm:text-sm font-black text-red-700 uppercase tracking-wider">📋 Dados do Registro de Venda</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-xs font-black text-gray-600 uppercase tracking-widest">Data da Venda</label>
@@ -437,18 +437,18 @@ export default function VehicleFormPage() {
               checked={formData.promocao}
               onChange={e => setFormData({ ...formData, promocao: e.target.checked })}
             />
-            <label htmlFor="promocao" className="font-bold text-sky-900 cursor-pointer text-sm">
+            <label htmlFor="promocao" className="font-bold text-sky-900 cursor-pointer text-xs sm:text-sm">
               ⭐ Destacar na Página Inicial (Oferta Especial Baby Motos)
             </label>
           </div>
         </div>
 
         {/* Fotos */}
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+        <div className="bg-white p-5 sm:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-5 sm:space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-sky-500">
               <ImageIcon size={20} />
-              <h3 className="font-heading font-black uppercase tracking-widest text-sm">Fotos do Veículo (Máx 5)</h3>
+              <h3 className="font-heading font-black uppercase tracking-widest text-xs sm:text-sm">Fotos do Veículo (Máx 5)</h3>
             </div>
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{formData.fotos.length}/5 fotos</span>
           </div>
@@ -467,7 +467,7 @@ export default function VehicleFormPage() {
             {/* Device Upload Drag/Drop Box */}
             <div 
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-sky-300 hover:border-sky-500 bg-sky-50/40 hover:bg-sky-50/80 rounded-2xl p-6 text-center cursor-pointer transition-all group"
+              className="border-2 border-dashed border-sky-300 hover:border-sky-500 bg-sky-50/40 hover:bg-sky-50/80 rounded-2xl p-5 sm:p-6 text-center cursor-pointer transition-all group"
             >
               {uploadingPhotos ? (
                 <div className="flex flex-col items-center justify-center space-y-2 py-2">
@@ -480,10 +480,10 @@ export default function VehicleFormPage() {
                     <UploadCloud size={24} />
                   </div>
                   <div>
-                    <p className="text-sm font-black text-gray-800">
+                    <p className="text-xs sm:text-sm font-black text-gray-800">
                       Clique aqui para escolher fotos do seu celular ou computador
                     </p>
-                    <p className="text-[11px] text-gray-400 font-bold mt-0.5">
+                    <p className="text-[10px] sm:text-[11px] text-gray-400 font-bold mt-0.5">
                       Suporta JPG, PNG, WEBP • Selecione várias fotos de uma vez
                     </p>
                   </div>
@@ -494,7 +494,7 @@ export default function VehicleFormPage() {
             {/* Alternative: Link / URL */}
             <div className="pt-2">
               <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-2">Ou adicione por link de imagem (URL):</p>
-              <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text" 
                   placeholder="https://exemplo.com/foto-moto.jpg"
@@ -511,7 +511,7 @@ export default function VehicleFormPage() {
                 <button 
                   type="button" 
                   onClick={addPhoto} 
-                  className="bg-sky-500 hover:bg-sky-600 text-white px-5 py-3 rounded-xl transition-all shadow-md shadow-sky-500/20 font-bold text-xs uppercase flex items-center gap-1.5"
+                  className="bg-sky-500 hover:bg-sky-600 text-white px-5 py-3 rounded-xl transition-all shadow-md shadow-sky-500/20 font-bold text-xs uppercase flex items-center justify-center gap-1.5 cursor-pointer"
                   title="Adicionar foto por link"
                 >
                   <Plus size={18} />
@@ -528,7 +528,7 @@ export default function VehicleFormPage() {
                   <button 
                     type="button" 
                     onClick={() => removePhoto(idx)} 
-                    className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-lg opacity-90 group-hover:opacity-100 transition-all shadow-md hover:bg-red-700"
+                    className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-lg opacity-90 group-hover:opacity-100 transition-all shadow-md hover:bg-red-700 cursor-pointer"
                     title="Remover foto"
                   >
                     <Trash2 size={14} />
@@ -550,10 +550,10 @@ export default function VehicleFormPage() {
         </div>
 
         {/* Descrição */}
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+        <div className="bg-white p-5 sm:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-5 sm:space-y-6">
           <div className="flex items-center space-x-2 text-sky-500">
             <Ruler size={20} />
-            <h3 className="font-heading font-black uppercase tracking-widest text-sm">Descrição Detalhada</h3>
+            <h3 className="font-heading font-black uppercase tracking-widest text-xs sm:text-sm">Descrição Detalhada</h3>
           </div>
           <textarea
             rows={4}
@@ -565,18 +565,18 @@ export default function VehicleFormPage() {
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-end space-x-4">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
           <button 
             type="button" 
             onClick={() => router.back()} 
-            className="px-8 py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-2xl font-black uppercase tracking-widest text-xs transition-all"
+            className="w-full sm:w-auto px-8 py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-2xl font-black uppercase tracking-widest text-xs transition-all text-center cursor-pointer"
           >
             Cancelar
           </button>
           <button
             type="submit" 
             disabled={saving}
-            className="px-10 py-4 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-sky-500/30 transition-all flex items-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-sky-500/30 transition-all flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
           >
             {saving ? (
               <>
