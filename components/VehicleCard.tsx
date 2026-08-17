@@ -14,7 +14,7 @@ interface VehicleCardProps {
 export default function VehicleCard({ vehicle }: VehicleCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { addToCart } = useCart();
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+5579991015150';
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5579999070264';
 
   const images = vehicle.fotos && vehicle.fotos.length > 0
     ? vehicle.fotos.sort((a: any, b: any) => a.position - b.position).map((f: any) => f.url)
@@ -87,7 +87,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           </h3>
           <div className="flex items-center text-gray-400 space-x-2">
             <Calendar size={12} className="text-gray-300" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">{vehicle.ano} • Seminovo Premium</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest">{vehicle.ano} • {vehicle.cor || 'Seminovo'}</span>
           </div>
         </div>
 

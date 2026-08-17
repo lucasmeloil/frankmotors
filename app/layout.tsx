@@ -13,11 +13,11 @@ import GlobalCartDrawer from "@/components/GlobalCartDrawer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Frank Motors - Veículos Novos e Seminovos",
-  description: "Loja Destaque 2024 e 2025 🏆🏅 • Vendas, compras, trocas e financiamentos de veículos",
-  keywords: "carros, motos, veículos, seminovos, Frank Motors, Lagarto",
+  title: "Baby Motos - Compra • Vende • Troca | Novas e Usadas",
+  description: "Baby Motos - As melhores ofertas em motos e veículos novos e usados. Compra, vende, troca e financiamentos em Itabaiana e região.",
+  keywords: "motos, carros, veículos, novas e usadas, Baby Motos, compra, vende, troca, Itabaiana, Sergipe",
   icons: {
-    icon: '/icon.jpg',
+    icon: '/assets/logo-babymotos.png',
   },
 };
 

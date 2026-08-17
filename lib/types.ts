@@ -3,9 +3,15 @@ export interface Vehicle {
   modelo: string;
   marca: string;
   ano: number;
+  cor?: string;
   preco: number;
+  precoCusto?: number;
+  lucro?: number;
+  status?: 'disponivel' | 'reservado' | 'vendido';
+  dataVenda?: string | Date;
+  compradorNome?: string;
   descricao?: string;
-  tipo: 'carro' | 'moto' | 'jetski' | 'utilitario';
+  tipo: 'carro' | 'moto' | 'scooter' | 'jetski' | 'utilitario' | string;
   promocao: boolean;
   estoque: number;
   created_at?: string | Date;

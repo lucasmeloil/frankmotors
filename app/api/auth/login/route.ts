@@ -14,10 +14,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Hardcoded fallback for development/emergency access
-    if (email === 'frank@motors.com' && password === 'frank1234') {
+    if ((email === 'admin@babymotos.com.br' || email === 'baby@motos.com' || email === 'frank@motors.com') && (password === 'baby1234' || password === 'frank1234')) {
       const token = generateToken({
         userId: 'f0000000-0000-0000-0000-000000000000',
-        email: 'frank@motors.com',
+        email: email,
         role: 'admin',
       });
 
@@ -25,9 +25,9 @@ export async function POST(request: NextRequest) {
         token,
         user: {
           id: 'f0000000-0000-0000-0000-000000000000',
-          email: 'frank@motors.com',
+          email: email,
           role: 'admin',
-          name: 'Frank'
+          name: 'Baby Motos Admin'
         },
       });
     }

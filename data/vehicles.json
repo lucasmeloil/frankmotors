@@ -1,0 +1,77 @@
+[
+  {
+    "marca": "Honda",
+    "modelo": "Titan CG 160",
+    "ano": 2026,
+    "cor": "Vermelha",
+    "precoCusto": 23000,
+    "preco": 28500,
+    "descricao": "",
+    "tipo": "moto",
+    "promocao": true,
+    "estoque": 1,
+    "status": "disponivel",
+    "dataVenda": "",
+    "compradorNome": "",
+    "fotos": [
+      {
+        "url": "/uploads/moto_1786942226898_vermelha_webp.webp",
+        "position": 0
+      }
+    ],
+    "lucro": 5500,
+    "id": "bm-1786942231818",
+    "created_at": "2026-08-17T04:50:31.819Z",
+    "updated_at": "2026-08-17T04:50:31.819Z"
+  },
+  {
+    "marca": "Honda",
+    "modelo": "Biz 125",
+    "ano": 2026,
+    "cor": "AZUL",
+    "precoCusto": 21000,
+    "preco": 25000,
+    "descricao": "",
+    "tipo": "moto",
+    "promocao": true,
+    "estoque": 1,
+    "status": "disponivel",
+    "dataVenda": "",
+    "compradorNome": "",
+    "fotos": [
+      {
+        "url": "/uploads/moto_1786942497091_foto890_44687_webp.webp",
+        "position": 0
+      }
+    ],
+    "lucro": 4000,
+    "id": "bm-1786941015049",
+    "created_at": "2026-08-17T04:30:15.051Z",
+    "updated_at": "2026-08-17T04:54:59.042Z"
+  },
+  {
+    "id": "bm-titan-160-2026",
+    "marca": "Honda",
+    "modelo": "CG 160 Titan",
+    "ano": 2026,
+    "cor": "Azul Metálico",
+    "precoCusto": 23000,
+    "preco": 29000,
+    "lucro": 6000,
+    "descricao": "Honda CG 160 Titan 2026 Zero KM. Freios CBS, painel digital blackout, partida elétrica e injeção eletrônica.",
+    "tipo": "moto",
+    "promocao": true,
+    "estoque": 1,
+    "status": "disponivel",
+    "fotos": [
+      {
+        "url": "https://i.ibb.co/wN14RVW5/prata.webp",
+        "position": 0
+      }
+    ],
+    "created_at": "2026-08-17T03:51:10.724Z",
+    "dataVenda": "",
+    "compradorNome": "",
+    "updated_at": "2026-08-17T05:04:13.788Z"
+  }
+]

@@ -2,17 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-
 html {
   scroll-behavior: smooth;
 }
 
 :root {
-  --primary: #0a0a0a;
-  --secondary: #e60000;
+  --primary: #0b192c;
+  --secondary: #0099ff;
   --background: #f8fafc;
   --text: #1e293b;
-  --accent: #facc15;
+  --accent: #38bdf8;
 }
 
 * {
@@ -29,35 +28,53 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-@layer components {
-  .glass-card {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-  }
-  
-  .glass-nav {
-    @apply bg-white/80 backdrop-blur-md border-b border-white/10;
-  }
-
-  .premium-gradient {
-    @apply bg-gradient-to-br from-primary via-gray-900 to-black;
-  }
-
-  .btn-primary {
-    @apply bg-secondary text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg;
-  }
+/* Custom Glass & Design System Utilities */
+.glass-card {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 153, 255, 0.08);
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  .shadow-premium {
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
-  }
+.glass-nav {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(186, 230, 253, 0.3);
+}
 
-  .shadow-premium-hover {
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
-  }
+.premium-gradient {
+  background-image: linear-gradient(to bottom right, #06101e, #0b192c, #0f172a);
+}
+
+.btn-primary {
+  background-image: linear-gradient(to right, #0088ff, #00a6ff);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.3);
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 25px -5px rgba(14, 165, 233, 0.5);
+}
+
+.btn-primary:active {
+  transform: scale(0.95);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.shadow-premium {
+  box-shadow: 0 20px 50px rgba(11, 25, 44, 0.08);
+}
+
+.shadow-premium-hover {
+  box-shadow: 0 30px 60px rgba(0, 153, 255, 0.15);
 }

@@ -1,157 +1,379 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Car, Tag, Users, TrendingUp, AlertCircle, CheckCircle, Sparkles } from 'lucide-react';
+import { Bike, TrendingUp, DollarSign, Package, BarChart2, Sparkles, ArrowRight, CheckCircle, Wallet, ShieldAlert, Layers } from 'lucide-react';
 import { toast } from 'sonner';
+import Link from 'next/link';
+import { getAllVehicles, getAllVendas, VendaRecord, VehicleRecord } from '@/lib/db-service';
+
+interface DashStats {
+  totalVehicles: number;
+  disponiveis: number;
+  vendidos: number;
+  reservados: number;
+  // Caixa Realizado
+  receitaTotal: number;
+  custoVendas: number;
+  lucroTotal: number;
+  margemMedia: number;
+  // Estoque Atual
+  custoEstoqueDisponivel: number;
+  valorVendaEstoqueDisponivel: number;
+  lucroProjetadoEstoque: number;
+}
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<DashStats>({
     totalVehicles: 0,
-    promotions: 0,
-    activeReservations: 0, // In a real app this would come from a database table
+    disponiveis: 0,
+    vendidos: 0,
+    reservados: 0,
+    receitaTotal: 0,
+    custoVendas: 0,
+    lucroTotal: 0,
+    margemMedia: 0,
+    custoEstoqueDisponivel: 0,
+    valorVendaEstoqueDisponivel: 0,
+    lucroProjetadoEstoque: 0
   });
+  const [recentSales, setRecentSales] = useState<VendaRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [adminName, setAdminName] = useState('');
 
   useEffect(() => {
-    fetchStats();
-    
-    // Welcome message logic
+    const user = localStorage.getItem('admin_user');
+    if (user) {
+      const u = JSON.parse(user);
+      setAdminName(u.name || u.email || 'Admin');
+    }
+
     const showWelcome = sessionStorage.getItem('show_welcome');
     if (showWelcome === 'true') {
-      toast.success('Olá Patrão! Bem-vindo de volta.', {
-        description: 'Sua central de controle futurista está pronta 🚀',
-        duration: 5000,
-        icon: <Sparkles className="text-yellow-400 animate-pulse" />,
-        style: {
-          background: 'linear-gradient(135deg, #1a1a1a 0%, #000000 100%)',
-          color: '#ffffff',
-          border: '1px solid #e60000',
-          boxShadow: '0 0 20px rgba(230, 0, 0, 0.3)'
-        }
+      toast.success('Bem-vindo de volta! 🚀', {
+        description: 'Painel financeiro Baby Motos carregado com sucesso.',
+        duration: 4000,
       });
       sessionStorage.removeItem('show_welcome');
     }
+
+    fetchDashboard();
   }, []);
 
-  const fetchStats = async () => {
+  const fetchDashboard = async () => {
     try {
-      const res = await fetch('/api/vehicles');
-      const data = await res.json();
-      setStats({
-        totalVehicles: data.pagination.total || 0,
-        promotions: data.vehicles.filter((v: any) => v.promocao).length || 0,
-        activeReservations: 12, // Dummy data for demo
+      const [vehicles, vendasList] = await Promise.all([
+        getAllVehicles(true),
+        getAllVendas()
+      ]);
+
+      const map = new Map<string, VendaRecord>();
+
+      vendasList.forEach(v => {
+        const key = v.vehicleId || v.id || Math.random().toString();
+        map.set(key, {
+          ...v,
+          precoCusto: Number(v.precoCusto) || 0,
+          precoVenda: Number(v.precoVenda) || 0,
+          lucro: Number(v.lucro) || (Number(v.precoVenda) - Number(v.precoCusto))
+        });
       });
+
+      vehicles.filter(v => v.status === 'vendido').forEach(v => {
+        const key = v.id || Math.random().toString();
+        if (!map.has(key)) {
+          const precoCusto = Number(v.precoCusto) || 0;
+          const precoVenda = Number(v.preco) || 0;
+          const lucro = precoVenda - precoCusto;
+          const margemPercent = precoCusto > 0 ? (lucro / precoCusto) * 100 : 0;
+          map.set(key, {
+            id: `venda-${v.id}`,
+            vehicleId: v.id || '',
+            vehicleName: `${v.marca} ${v.modelo} ${v.ano}`,
+            marca: v.marca,
+            modelo: v.modelo,
+            ano: v.ano,
+            cor: v.cor,
+            precoCusto,
+            precoVenda,
+            lucro,
+            margemPercent: Number(margemPercent.toFixed(1)),
+            compradorNome: v.compradorNome || 'Cliente',
+            dataVenda: v.dataVenda || v.updated_at || new Date().toISOString(),
+            created_at: v.created_at || new Date().toISOString()
+          });
+        }
+      });
+
+      const allVendas = Array.from(map.values());
+
+      const motosDisponiveis = vehicles.filter(v => !v.status || v.status === 'disponivel');
+      const motosVendidas = vehicles.filter(v => v.status === 'vendido');
+      const motosReservadas = vehicles.filter(v => v.status === 'reservado');
+
+      // Vendas Realizadas (Caixa)
+      const receitaTotal = allVendas.reduce((acc, v) => acc + (Number(v.precoVenda) || 0), 0);
+      const custoVendas = allVendas.reduce((acc, v) => acc + (Number(v.precoCusto) || 0), 0);
+      const lucroTotal = allVendas.reduce((acc, v) => acc + (Number(v.lucro) || 0), 0);
+      const margemMedia = custoVendas > 0 ? (lucroTotal / custoVendas) * 100 : 0;
+
+      // Estoque Atual Disponível
+      const custoEstoqueDisponivel = motosDisponiveis.reduce((acc, v) => acc + (Number(v.precoCusto) || 0), 0);
+      const valorVendaEstoqueDisponivel = motosDisponiveis.reduce((acc, v) => acc + (Number(v.preco) || 0), 0);
+      const lucroProjetadoEstoque = valorVendaEstoqueDisponivel - custoEstoqueDisponivel;
+
+      setStats({
+        totalVehicles: vehicles.length,
+        disponiveis: motosDisponiveis.length,
+        vendidos: allVendas.length,
+        reservados: motosReservadas.length,
+        receitaTotal,
+        custoVendas,
+        lucroTotal,
+        margemMedia,
+        custoEstoqueDisponivel,
+        valorVendaEstoqueDisponivel,
+        lucroProjetadoEstoque
+      });
+
+      // Últimas 5 vendas ordenadas por data
+      allVendas.sort((a, b) => {
+        const tA = a.dataVenda ? new Date(a.dataVenda).getTime() : 0;
+        const tB = b.dataVenda ? new Date(b.dataVenda).getTime() : 0;
+        return tB - tA;
+      });
+
+      setRecentSales(allVendas.slice(0, 5));
+
     } catch (e) {
-      console.error(e);
+      console.error('Erro dashboard:', e);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const widgets = [
-    { label: 'Total de Veículos', value: stats.totalVehicles, icon: Car, color: 'bg-blue-500' },
-    { label: 'Em Promoção', value: stats.promotions, icon: Tag, color: 'bg-red-500' },
-    { label: 'Reservas Hoje', value: stats.activeReservations, icon: TrendingUp, color: 'bg-green-500' },
-    { label: 'Usuários Ativos', value: 1, icon: Users, color: 'bg-purple-500' },
-  ];
+  const fmt = (v: number) => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+  const formatDate = (dateVal: any) => {
+    if (!dateVal) return '—';
+    try {
+      const d = typeof dateVal === 'string' ? new Date(dateVal) : (dateVal.toDate ? dateVal.toDate() : new Date(dateVal));
+      return d.toLocaleDateString('pt-BR');
+    } catch { return '—'; }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-sky-500" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-16">
       {/* Welcome Banner */}
-      <div className="bg-primary text-white p-8 rounded-3xl shadow-xl relative overflow-hidden group">
-        <div className="relative z-10">
-          <div className="flex items-center space-x-3 mb-2">
-            <Sparkles className="text-secondary animate-bounce" size={24} />
-            <h1 className="text-3xl font-black uppercase italic tracking-tighter">Olá Patrão! Bem-vindo de volta.</h1>
+      <div className="bg-gradient-to-r from-[#06101e] via-[#0b192c] to-[#0f172a] text-white p-8 rounded-3xl shadow-xl relative overflow-hidden border border-sky-900/30">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center space-x-3 mb-2">
+              <Sparkles className="text-sky-400 animate-bounce" size={22} />
+              <h1 className="text-2xl font-black uppercase italic tracking-tighter">
+                Olá{adminName ? `, ${adminName.split(' ')[0]}` : ''}! Painel Financeiro Baby Motos
+              </h1>
+            </div>
+            <p className="text-sky-200/70 text-sm">Controle em tempo real de caixa, estoque e lucros de Itabaiana – SE.</p>
           </div>
-          <p className="text-gray-400 font-medium">A Frank Motors está operando em 100% da capacidade hoje. 🏎️💨</p>
+
+          <div className="flex items-center gap-3">
+            <Link href="/admin/veiculos/novo">
+              <button className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-sky-500/25 transition-all">
+                + Nova Moto
+              </button>
+            </Link>
+            <Link href="/admin/relatorios">
+              <button className="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all">
+                Ver Relatórios
+              </button>
+            </Link>
+          </div>
         </div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-secondary/20 transition-all duration-700"></div>
-        <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-accent/5 rounded-full blur-2xl"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {widgets.map((widget, idx) => {
-          const Icon = widget.icon;
-          return (
-            <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
-              <div className={`${widget.color} p-3 rounded-xl text-white`}>
-                <Icon size={24} />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">{widget.label}</p>
-                <p className="text-2xl font-black text-primary">{widget.value}</p>
+      {/* Grid 1: Caixa & Lucro Realizado (Vendas Efetuadas) */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xs font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">
+            <Wallet size={16} className="text-emerald-500" /> Fluxo de Caixa Realizado (Vendas Efetuadas)
+          </h2>
+          <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-wider rounded-full border border-emerald-200">
+            🟢 Saldo Positivo
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Caixa Total */}
+          <div className="bg-white p-6 rounded-3xl shadow-sm border border-emerald-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-black text-gray-400 uppercase tracking-wider">Total em Caixa</p>
+              <div className="bg-emerald-50 p-2.5 rounded-2xl text-emerald-600">
+                <DollarSign size={20} />
               </div>
             </div>
-          );
-        })}
+            <p className="text-3xl font-black text-gray-900">R$ {fmt(stats.receitaTotal)}</p>
+            <p className="text-xs text-emerald-600 font-bold mt-1.5 flex items-center gap-1">
+              <CheckCircle size={13} /> {stats.vendidos} venda(s) realizada(s)
+            </p>
+          </div>
+
+          {/* Lucro Líquido no Caixa */}
+          <div className="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-black text-gray-400 uppercase tracking-wider">Lucro Líquido Caixa</p>
+              <div className="bg-sky-50 p-2.5 rounded-2xl text-sky-600">
+                <TrendingUp size={20} />
+              </div>
+            </div>
+            <p className="text-3xl font-black text-sky-600">+R$ {fmt(stats.lucroTotal)}</p>
+            <p className="text-xs text-gray-500 font-bold mt-1.5">
+              Margem média: <strong className="text-sky-700">{stats.margemMedia.toFixed(1)}%</strong>
+            </p>
+          </div>
+
+          {/* Custo Total das Vendas */}
+          <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-black text-gray-400 uppercase tracking-wider">Custo das Vendas</p>
+              <div className="bg-red-50 p-2.5 rounded-2xl text-red-500">
+                <ShieldAlert size={20} />
+              </div>
+            </div>
+            <p className="text-2xl font-black text-gray-800">R$ {fmt(stats.custoVendas)}</p>
+            <p className="text-xs text-gray-400 font-medium mt-1.5">Capital recuperado na venda</p>
+          </div>
+
+          {/* Motos Vendidas */}
+          <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-black text-gray-400 uppercase tracking-wider">Motos Vendidas</p>
+              <div className="bg-purple-50 p-2.5 rounded-2xl text-purple-600">
+                <Bike size={20} />
+              </div>
+            </div>
+            <p className="text-3xl font-black text-gray-900">{stats.vendidos}</p>
+            <p className="text-xs text-gray-400 font-medium mt-1.5">Retiradas da vitrine pública</p>
+          </div>
+        </div>
       </div>
 
+      {/* Grid 2: Patrimônio Atual em Estoque */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xs font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">
+            <Layers size={16} className="text-sky-500" /> Patrimônio Atual em Pátio / Estoque
+          </h2>
+          <span className="px-3 py-1 bg-sky-50 text-sky-700 text-[10px] font-black uppercase tracking-wider rounded-full border border-sky-200">
+            {stats.disponiveis} Moto(s) no Pátio
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {/* Capital Investido no Estoque */}
+          <div className="bg-gradient-to-br from-slate-900 to-[#0c1a2e] text-white p-6 rounded-3xl shadow-md border border-slate-800">
+            <p className="text-xs font-black text-sky-400 uppercase tracking-wider mb-2">Capital Investido (Custo)</p>
+            <p className="text-3xl font-black text-white">R$ {fmt(stats.custoEstoqueDisponivel)}</p>
+            <p className="text-xs text-gray-400 mt-2">Dinheiro alocado em motos no pátio</p>
+          </div>
+
+          {/* Potencial de Venda do Estoque */}
+          <div className="bg-gradient-to-br from-blue-900 to-indigo-950 text-white p-6 rounded-3xl shadow-md border border-blue-800">
+            <p className="text-xs font-black text-sky-300 uppercase tracking-wider mb-2">Potencial de Venda (Estoque)</p>
+            <p className="text-3xl font-black text-white">R$ {fmt(stats.valorVendaEstoqueDisponivel)}</p>
+            <p className="text-xs text-sky-200/70 mt-2">Valor total se vender todas as motos</p>
+          </div>
+
+          {/* Lucro Previsto */}
+          <div className="bg-gradient-to-br from-emerald-950 to-slate-900 text-white p-6 rounded-3xl shadow-md border border-emerald-800">
+            <p className="text-xs font-black text-emerald-400 uppercase tracking-wider mb-2">Lucro Projetado em Estoque</p>
+            <p className="text-3xl font-black text-emerald-400">+R$ {fmt(stats.lucroProjetadoEstoque)}</p>
+            <p className="text-xs text-gray-400 mt-2">Lucro garantido com as motos atuais</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Grid 3: Histórico de Vendas & Resumo Operacional */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+        {/* Últimas Vendas */}
+        <div className="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-heading font-black text-primary uppercase">Atividades Recentes</h3>
-            <button className="text-xs font-bold text-secondary hover:underline">Ver todas</button>
+            <h3 className="font-heading font-black text-primary uppercase flex items-center gap-2 text-sm tracking-wider">
+              <CheckCircle size={18} className="text-emerald-500" /> Últimas Vendas no Caixa
+            </h3>
+            <Link href="/admin/relatorios" className="text-xs font-black text-sky-600 hover:text-sky-700 flex items-center gap-1 uppercase tracking-wider">
+              Relatório Completo <ArrowRight size={13} />
+            </Link>
           </div>
-          <div className="divide-y divide-gray-50">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center text-green-600">
-                    <CheckCircle size={20} />
+          {recentSales.length === 0 ? (
+            <div className="p-12 text-center text-gray-400">
+              <Bike size={48} className="mx-auto mb-3 opacity-25 text-sky-500" />
+              <p className="text-sm font-bold text-gray-700">Nenhuma venda registrada ainda no caixa.</p>
+              <p className="text-xs mt-1 text-gray-400">Na aba <strong>Veículos</strong>, clique no botão verde <strong>$ VENDER</strong> para registrar vendas instantâneas.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {recentSales.map((sale) => (
+                <div key={sale.id || Math.random()} className="p-5 flex items-center justify-between hover:bg-gray-50/60 transition-colors">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-black shadow-sm">
+                      <DollarSign size={20} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black text-gray-900">{sale.vehicleName}</p>
+                      <p className="text-xs text-gray-400 font-medium">
+                        Comprador: <span className="font-bold text-gray-600">{sale.compradorNome || 'Cliente'}</span> • {formatDate(sale.dataVenda)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-primary">Novo veículo cadastrado: Toyota Corolla 2023</p>
-                    <p className="text-xs text-gray-400">Há {i * 2} horas por Lucas Melo</p>
+                  <div className="text-right">
+                    <p className="text-base font-black text-gray-900">R$ {fmt(sale.precoVenda)}</p>
+                    <p className="text-xs font-black text-emerald-600">+R$ {fmt(sale.lucro)} lucro</p>
                   </div>
                 </div>
-                <div className="px-3 py-1 bg-gray-100 rounded-full text-[10px] font-black text-gray-500 uppercase">Sucesso</div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* System Alerts */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 space-y-6">
-          <h3 className="font-heading font-black text-primary uppercase">Alertas do Sistema</h3>
-          <div className="space-y-4">
-            <div className="bg-red-50 p-4 rounded-2xl flex items-start space-x-3 text-red-700">
-              <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-bold">Estoque Baixo</p>
-                <p className="text-xs opacity-80">Honda Civic está com apenas 1 unidade disponível.</p>
-              </div>
+        {/* Balanço Geral */}
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-6">
+          <h3 className="font-heading font-black text-primary uppercase flex items-center gap-2 text-sm tracking-wider">
+            <BarChart2 size={18} className="text-sky-500" /> Balanço Geral Baby Motos
+          </h3>
+
+          <div className="space-y-4 text-sm">
+            <div className="flex justify-between items-center py-2.5 border-b border-gray-100">
+              <span className="text-gray-500 font-bold">Total de Motos Cadastradas</span>
+              <span className="font-black text-gray-900">{stats.totalVehicles}</span>
             </div>
-            <div className="bg-blue-50 p-4 rounded-2xl flex items-start space-x-3 text-blue-700">
-              <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-bold">Atualização de Sistema</p>
-                <p className="text-xs opacity-80">Nova versão do dashboard disponível. Verifique as configurações.</p>
-              </div>
+            <div className="flex justify-between items-center py-2.5 border-b border-gray-100">
+              <span className="text-gray-500 font-bold">Motos Disponíveis</span>
+              <span className="font-black text-emerald-600">{stats.disponiveis}</span>
             </div>
-          </div>
-          
-          <div className="pt-6 border-t border-gray-100">
-            <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Metas do Mês</h4>
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-xs font-bold mb-1">
-                  <span>Vendas</span>
-                  <span>75%</span>
-                </div>
-                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="bg-secondary h-full w-[75%] rounded-full"></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-xs font-bold mb-1">
-                  <span>Novos Leads</span>
-                  <span>40%</span>
-                </div>
-                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="bg-accent h-full w-[40%] rounded-full"></div>
-                </div>
-              </div>
+            <div className="flex justify-between items-center py-2.5 border-b border-gray-100">
+              <span className="text-gray-500 font-bold">Motos Vendidas</span>
+              <span className="font-black text-purple-600">{stats.vendidos}</span>
+            </div>
+            <div className="flex justify-between items-center py-2.5 border-b border-gray-100">
+              <span className="text-gray-500 font-bold">Capital em Estoque (Custo)</span>
+              <span className="font-black text-slate-800">R$ {fmt(stats.custoEstoqueDisponivel)}</span>
+            </div>
+            <div className="flex justify-between items-center py-2.5 border-b border-gray-100">
+              <span className="text-gray-500 font-bold">Lucro Projetado em Pátio</span>
+              <span className="font-black text-sky-600">+R$ {fmt(stats.lucroProjetadoEstoque)}</span>
+            </div>
+            <div className="flex justify-between items-center py-2.5 bg-emerald-50/80 p-3 rounded-2xl border border-emerald-100">
+              <span className="text-emerald-800 font-black">Lucro Realizado no Caixa</span>
+              <span className="font-black text-emerald-700 text-base">+R$ {fmt(stats.lucroTotal)}</span>
             </div>
           </div>
         </div>

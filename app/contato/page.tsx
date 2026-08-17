@@ -42,16 +42,16 @@ export default function ContatoPage() {
 
               <div className="space-y-4 md:space-y-6">
                 {[
-                  { icon: MessageCircle, color: "bg-green-600", label: "WhatsApp", value: "(79) 99101-5150", link: `https://wa.me/${whatsappNumber}` },
-                  { icon: Phone, color: "bg-secondary", label: "Telefone", value: "(79) 99101-5150", link: "tel:+5579991015150" },
-                  { icon: Mail, color: "bg-primary", label: "E-mail", value: "contato@frankmotors.com.br", link: "mailto:contato@frankmotors.com.br" },
+                  { icon: MessageCircle, color: "bg-green-600", label: "WhatsApp & Ligação (Baby)", value: "(79) 99907-0264", link: "https://wa.me/5579999070264" },
+                  { icon: Phone, color: "bg-sky-500", label: "WhatsApp & Ligação (Boniek)", value: "(79) 99974-0934", link: "https://wa.me/5579999740934" },
+                  { icon: Mail, color: "bg-primary", label: "E-mail Oficial", value: "contato@babymotos.com.br", link: "mailto:contato@babymotos.com.br" },
                 ].map((item, i) => (
                   <a
                     key={i}
                     href={item.link}
                     target={item.link.startsWith('http') ? "_blank" : "_self"}
                     rel="noopener noreferrer"
-                    className="flex items-center space-x-4 sm:space-x-6 p-4 sm:p-5 rounded-[2rem] hover:bg-gray-50 transition-all group border border-transparent hover:border-gray-100"
+                    className="flex items-center space-x-4 sm:space-x-6 p-4 sm:p-5 rounded-[2rem] hover:bg-sky-50/50 transition-all group border border-transparent hover:border-sky-100"
                   >
                     <div className={`w-12 h-12 sm:w-14 sm:h-14 ${item.color} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform text-white`}>
                       <item.icon size={20} className="sm:w-6 sm:h-6" />
@@ -60,7 +60,7 @@ export default function ContatoPage() {
                       <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 truncate">{item.label}</h3>
                       <p className="font-bold text-sm sm:text-lg text-primary truncate">{item.value}</p>
                     </div>
-                    <ChevronRight className="text-gray-200 group-hover:text-secondary transition-colors lex-shrink-0" size={20} />
+                    <ChevronRight className="text-gray-200 group-hover:text-sky-500 transition-colors flex-shrink-0" size={20} />
                   </a>
                 ))}
               </div>
@@ -80,8 +80,8 @@ export default function ContatoPage() {
               ></iframe>
               <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20 pointer-events-none">
                 <div className="flex items-center space-x-2">
-                  <MapPin size={16} className="text-secondary" />
-                  <span className="text-xs font-black text-primary uppercase">Lagarto, SE</span>
+                  <MapPin size={16} className="text-sky-500" />
+                  <span className="text-xs font-black text-primary uppercase">Itabaiana, SE</span>
                 </div>
               </div>
             </div>
@@ -90,7 +90,7 @@ export default function ContatoPage() {
           {/* Right Column: Quick Message & Hours */}
           <div className="space-y-8">
             {/* Quick Message Form */}
-             <div className="bg-gradient-to-br from-secondary to-red-900 text-white rounded-[2.5rem] shadow-2xl shadow-red-900/20 p-8 sm:p-10 relative overflow-hidden">
+             <div className="bg-gradient-to-br from-sky-500 to-slate-900 text-white rounded-[2.5rem] shadow-2xl shadow-sky-500/20 p-8 sm:p-10 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
               
               <div className="relative z-10 space-y-6">
@@ -107,13 +107,13 @@ export default function ContatoPage() {
                   <textarea 
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Olá, gostaria de saber mais sobre..."
+                    placeholder="Olá, gostaria de saber mais sobre os veículos na Baby Motos..."
                     rows={4}
                     className="w-full bg-white/10 border border-white/20 rounded-2xl p-4 text-white placeholder:text-white/50 focus:outline-none focus:bg-white/20 focus:border-white/40 transition-all resize-none text-sm font-medium"
                   ></textarea>
                   <button 
                     type="submit"
-                    className="w-full bg-white text-secondary py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-primary hover:text-white transition-all shadow-xl flex items-center justify-center space-x-2 active:scale-95 from-white to-gray-200"
+                    className="w-full bg-white text-sky-600 py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-sky-50 transition-all shadow-xl flex items-center justify-center space-x-2 active:scale-95"
                   >
                     <span>Enviar WhatsApp</span>
                     <Send size={16} />
@@ -125,7 +125,7 @@ export default function ContatoPage() {
             {/* Hours */}
             <div className="bg-white rounded-[2.5rem] shadow-premium p-8 sm:p-10 border border-gray-100">
               <div className="flex items-center space-x-3 mb-8">
-                <Clock className="text-secondary" size={24} />
+                <Clock className="text-sky-500" size={24} />
                 <h2 className="font-heading text-xl font-black text-primary uppercase italic">Horários</h2>
               </div>
               <div className="space-y-4">

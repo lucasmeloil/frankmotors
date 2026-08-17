@@ -7,6 +7,8 @@ import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
 import { MessageCircle, ShoppingCart, ArrowLeft, Calendar, Gauge, Info, ChevronRight, ShieldCheck } from 'lucide-react';
 
+import { getVehicleById } from '@/lib/db-service';
+
 export default function VehicleDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -19,20 +21,15 @@ export default function VehicleDetailsPage() {
     const fetchVehicle = async () => {
       if (!id) return;
       try {
-        const { db } = await import('@/lib/firebase');
-        const { doc, getDoc } = await import('firebase/firestore');
-        
-        const docRef = doc(db, 'vehicles', id as string);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setVehicle({ id: docSnap.id, ...data } as Vehicle);
+        const data = await getVehicleById(id as string);
+        if (data) {
+          const { precoCusto, compradorNome, ...publicData } = data;
+          setVehicle(publicData as Vehicle);
         } else {
           setVehicle(null);
         }
       } catch (error) {
-        console.error('Error fetching vehicle from Firestore:', error);
+        console.error('Error fetching vehicle details:', error);
         setVehicle(null);
       } finally {
         setLoading(false);
@@ -73,7 +70,7 @@ export default function VehicleDetailsPage() {
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent(`Olá! Gostaria de mais informações sobre o ${vehicle.marca} ${vehicle.modelo} ${vehicle.ano} anunciado por R$ ${vehicle.preco.toLocaleString('pt-BR')}`);
-    window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+5579991015150'}?text=${message}`, '_blank');
+    window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5579999070264'}?text=${message}`, '_blank');
   };
 
   return (
@@ -178,6 +175,7 @@ export default function VehicleDetailsPage() {
                   { label: "Marca", value: vehicle.marca },
                   { label: "Modelo", value: vehicle.modelo },
                   { label: "Ano", value: vehicle.ano },
+                  { label: "Cor", value: vehicle.cor || "Preto" },
                   { label: "Categoria", value: vehicle.tipo },
                   { label: "Disponibilidade", value: vehicle.estoque > 0 ? "Em Estoque" : "Indisponível" }
                 ].map((spec, i) => (

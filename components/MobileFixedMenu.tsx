@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Car, MessageCircle, Users } from 'lucide-react';
+import { Home, Bike, MessageCircle, Users } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
 export default function MobileFixedMenu() {
@@ -15,7 +15,7 @@ export default function MobileFixedMenu() {
   const menuItems = [
     { label: 'Início', path: '/', icon: Home },
     { label: 'Quem Somos', path: '/quem-somos', icon: Users },
-    { label: 'Veículos', path: '/veiculos', icon: Car },
+    { label: 'Motos', path: '/veiculos', icon: Bike },
     { label: 'Contato', path: '/contato', icon: MessageCircle },
   ];
 

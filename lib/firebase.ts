@@ -1,26 +1,37 @@
-// Import the functions you need from the SDKs you need
+// Firebase SDK
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, initializeFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+import { getDatabase } from "firebase/database";
 
-// Your web app's Firebase configuration
+// Baby Motos Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDGgVPCWPkZWlq4ZXVQ3lNrLBd8_XK_-ms",
-  authDomain: "frankmo-e0419.firebaseapp.com",
-  projectId: "frankmo-e0419",
-  storageBucket: "frankmo-e0419.firebasestorage.app",
-  messagingSenderId: "791024968636",
-  appId: "1:791024968636:web:0c8c065042d3eb5c97c1b9"
+  apiKey: "AIzaSyAMw3BfO7LV0hee6qa483d1OEzmb5MKQQM",
+  authDomain: "babymotos.firebaseapp.com",
+  projectId: "babymotos",
+  storageBucket: "babymotos.firebasestorage.app",
+  messagingSenderId: "73690966474",
+  appId: "1:73690966474:web:3ff93389c41138a77cc733",
+  measurementId: "G-S9MWCK0EYV",
+  databaseURL: "https://babymotos-default-rtdb.firebaseio.com/"
 };
 
-// Initialize Firebase
-import { getStorage } from "firebase/storage";
-
+// Initialize Firebase (singleton pattern)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
 
-export { app, auth, db, storage };
+// Use initializeFirestore with auto-detect long polling to prevent hanging WebChannels
+let db: ReturnType<typeof getFirestore>;
+try {
+  db = initializeFirestore(app, {
+    experimentalAutoDetectLongPolling: true,
+  });
+} catch {
+  db = getFirestore(app);
+}
+
+const storage = getStorage(app);
+const rtdb = getDatabase(app);
+
+export { app, auth, db, storage, rtdb };

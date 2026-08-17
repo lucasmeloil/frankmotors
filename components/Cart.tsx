@@ -28,7 +28,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
       return;
     }
 
-    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+5579991015150';
+    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5579999070264';
     
     const lista_itens = items.map(item => `- ${item.vehicle.marca} ${item.vehicle.modelo} (${item.vehicle.ano}): R$ ${Number(item.vehicle.preco).toLocaleString('pt-BR')}`).join('\n');
     
@@ -37,7 +37,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
       ? `Preciso de troco para R$ ${formData.troco}` 
       : '';
 
-    const message = `Olá, meu nome é ${formData.nome}. Quero reservar/comprar um veículo na Frank Motors.
+    const message = `Olá, meu nome é ${formData.nome}. Quero reservar/comprar um veículo na Baby Motos (Compra • Vende • Troca).
 
 Veículo:
 ${lista_itens}
