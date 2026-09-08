@@ -192,7 +192,7 @@ export default function RelatoriosPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 no-print bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100">
           <div>
             <h1 className="font-heading text-lg sm:text-2xl font-black text-primary uppercase flex items-center gap-2">
-              <Building2 size={24} className="text-sky-500 flex-shrink-0" /> Relatório Financeiro Baby Motos
+              <Building2 size={24} className="text-red-500 flex-shrink-0" /> Relatório Financeiro Cabo Car Multimarcas
             </h1>
             <p className="text-[11px] sm:text-xs text-gray-400 font-bold mt-1 uppercase tracking-wider">
               Cálculo exato por veículo unitário e acumulado total do estoque e vendas
@@ -300,34 +300,34 @@ export default function RelatoriosPage() {
           </div>
         )}
 
-        {/* 🏍️ CABEÇALHO OFICIAL BABY MOTOS (Visível na Tela e na Impressão PDF) */}
-        <div className="bg-gradient-to-r from-[#040914] via-[#0b192c] to-[#040914] text-white p-6 sm:p-8 rounded-3xl shadow-md border border-sky-500/20 flex flex-col md:flex-row items-center justify-between gap-6 print:rounded-2xl print:p-4 print:border print:border-sky-500">
+        {/* 🚗 CABEÇALHO OFICIAL CABO CAR MULTIMARCAS (Visível na Tela e na Impressão PDF) */}
+        <div className="bg-gradient-to-r from-[#09090b] via-[#141418] to-[#09090b] text-white p-6 sm:p-8 rounded-3xl shadow-md border border-red-600/30 flex flex-col md:flex-row items-center justify-between gap-6 print:rounded-2xl print:p-4 print:border print:border-red-600">
           
           {/* Logo & Marca Oficial */}
           <div className="flex items-center gap-4 text-center md:text-left">
-            <div className="relative w-44 h-14 sm:w-52 sm:h-16 shrink-0">
+            <div className="relative w-48 h-14 sm:w-56 sm:h-16 shrink-0">
               <Image 
-                src="/assets/logo-babymotos-transparent.png" 
-                alt="Baby Motos" 
+                src="/assets/logo-cabocar.png" 
+                alt="Cabo Car Multimarcas" 
                 fill 
-                className="object-contain filter drop-shadow-[0_2px_15px_rgba(0,166,255,0.7)]" 
+                className="object-contain filter drop-shadow-[0_2px_15px_rgba(220,38,38,0.7)]" 
                 priority
               />
             </div>
             <div className="hidden sm:block border-l border-white/15 pl-4">
-              <p className="text-xs font-black uppercase tracking-widest text-sky-400">
-                Compra • Vende • Troca
+              <p className="text-xs font-black uppercase tracking-widest text-red-500">
+                Compra • Venda • Troca • Financiamento
               </p>
               <p className="text-[11px] text-gray-300 font-bold flex items-center gap-1 mt-0.5">
-                <MapPin size={12} className="text-sky-400" /> Itabaiana – Sergipe
+                <MapPin size={12} className="text-red-500" /> Salgado – Sergipe
               </p>
             </div>
           </div>
 
           {/* Dados do Relatório & Contato */}
           <div className="text-center md:text-right space-y-1">
-            <div className="inline-block bg-sky-500/20 border border-sky-400/30 px-3 py-1 rounded-full mb-1">
-              <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-sky-300">
+            <div className="inline-block bg-red-600/20 border border-red-500/30 px-3 py-1 rounded-full mb-1">
+              <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-red-400">
                 {tipoVisualizacao === 'estoque' ? '📊 Relatório de Estoque no Pátio' : tipoVisualizacao === 'vendas' ? '💰 Relatório de Vendas Realizadas' : '📋 Relatório Financeiro Geral Oficial'}
               </p>
             </div>
@@ -335,9 +335,9 @@ export default function RelatoriosPage() {
               Período: <span className="text-white font-black">{periodLabels[periodo]}</span>
             </p>
             <p className="text-[10px] text-gray-400 font-bold flex items-center justify-center md:justify-end gap-2">
-              <span>Baby: (79) 99907-0264</span> • <span>Boniek: (79) 99974-0934</span>
+              <span>WhatsApp: (79) 99999-60149</span>
             </p>
-            <p className="text-[9px] text-sky-300/80 font-mono">
+            <p className="text-[9px] text-red-300/80 font-mono">
               Emissão: {dataHoraGeracao || '17/08/2026'}
             </p>
           </div>
@@ -633,8 +633,8 @@ export default function RelatoriosPage() {
 
         {/* Rodapé Oficial da Impressão */}
         <div className="mt-8 pt-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between text-[10px] text-gray-500 font-bold">
-          <p>Baby Motos • Sistema de Gestão e Inteligência Financeira • Itabaiana – SE</p>
-          <p className="mt-1 sm:mt-0 font-black text-sky-600">DEUS É BOM O TEMPO TODO 🙏🏼</p>
+          <p>Cabo Car Multimarcas • Sistema de Gestão e Inteligência Financeira • Salgado – SE</p>
+          <p className="mt-1 sm:mt-0 font-black text-red-600">DIRIJA A EXCELÊNCIA</p>
         </div>
 
       </div>

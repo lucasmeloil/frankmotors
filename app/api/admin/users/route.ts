@@ -24,8 +24,9 @@ export async function GET(request: NextRequest) {
     } catch (dbError) {
       // Fallback for mock users
       return NextResponse.json([
-        { id: 'f0000000-0000-0000-0000-000000000000', email: 'lucasmelo@nexus.com', role: 'admin', created_at: new Date().toISOString() }
+        { id: 'f0000000-0000-0000-0000-000000000000', email: 'admin@cabocar.com.br', role: 'admin', created_at: new Date().toISOString() }
       ]);
+
     }
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao buscar usuários' }, { status: 500 });

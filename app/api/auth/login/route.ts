@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Hardcoded fallback for development/emergency access
-    if ((email === 'admin@babymotos.com.br' || email === 'baby@motos.com' || email === 'frank@motors.com') && (password === 'baby1234' || password === 'frank1234')) {
+    if ((email === 'admin@cabocarmultimarcas.com.br' || email === 'admin@cabocar.com') && (password === 'cabo1234' || password === 'admin1234')) {
       const token = generateToken({
         userId: 'f0000000-0000-0000-0000-000000000000',
         email: email,
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
           id: 'f0000000-0000-0000-0000-000000000000',
           email: email,
           role: 'admin',
-          name: 'Baby Motos Admin'
+          name: 'Cabo Car Multimarcas Admin'
         },
       });
     }

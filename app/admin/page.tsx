@@ -50,7 +50,7 @@ export default function AdminDashboard() {
     const showWelcome = sessionStorage.getItem('show_welcome');
     if (showWelcome === 'true') {
       toast.success('Bem-vindo de volta! 🚀', {
-        description: 'Painel financeiro Baby Motos carregado com sucesso.',
+        description: 'Painel financeiro Cabo Car Multimarcas carregado com sucesso.',
         duration: 4000,
       });
       sessionStorage.removeItem('show_welcome');
@@ -172,32 +172,32 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6 sm:space-y-8 pb-16">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-[#06101e] via-[#0b192c] to-[#0f172a] text-white p-5 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-sky-900/30">
+      <div className="bg-gradient-to-r from-[#09090b] via-[#121214] to-black text-white p-5 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-red-900/30">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2.5 mb-1.5">
-              <Sparkles className="text-sky-400 animate-bounce" size={20} />
+              <Sparkles className="text-red-500 animate-bounce" size={20} />
               <h1 className="text-lg sm:text-2xl font-black uppercase italic tracking-tight">
-                Olá{adminName ? `, ${adminName.split(' ')[0]}` : ''}! Painel Baby Motos
+                Olá{adminName ? `, ${adminName.split(' ')[0]}` : ''}! Painel Cabo Car Multimarcas
               </h1>
             </div>
-            <p className="text-sky-200/70 text-xs sm:text-sm">Controle em tempo real de caixa, estoque e lucros de Itabaiana – SE.</p>
+            <p className="text-red-300/80 text-xs sm:text-sm">Controle em tempo real de estoque, caixa e vendas • Salgado – SE.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
             <Link href="/admin/veiculos/novo" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-sky-500/25 transition-all text-center">
-                + Nova Moto
+              <button className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-red-600/25 transition-all text-center cursor-pointer">
+                + Novo Veículo
               </button>
             </Link>
             <Link href="/admin/relatorios" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/10 px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-center">
+              <button className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/10 px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-center cursor-pointer">
                 Ver Relatórios
               </button>
             </Link>
           </div>
         </div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
       </div>
 
       {/* Grid 1: Caixa & Lucro Realizado (Vendas Efetuadas) */}
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
         {/* Balanço Geral */}
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4 sm:space-y-6">
           <h3 className="font-heading font-black text-primary uppercase flex items-center gap-2 text-xs sm:text-sm tracking-wider">
-            <BarChart2 size={18} className="text-sky-500" /> Balanço Geral Baby Motos
+            <BarChart2 size={18} className="text-red-500" /> Balanço Geral Cabo Car Multimarcas
           </h3>
 
           <div className="space-y-3 text-xs sm:text-sm">

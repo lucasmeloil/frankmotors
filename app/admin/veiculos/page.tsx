@@ -88,7 +88,7 @@ export default function AdminVehiclesPage() {
         status: 'vendido',
         estoque: 0,
         dataVenda: saleForm.dataVenda,
-        compradorNome: saleForm.compradorNome.trim() || 'Cliente Baby Motos'
+        compradorNome: saleForm.compradorNome.trim() || 'Cliente Cabo Car Multimarcas'
       };
 
       await saveVehicleToDatabase(updatedVehicle, selectedVehicleForSale.id);
@@ -144,7 +144,7 @@ export default function AdminVehiclesPage() {
         </div>
         
         <Link href="/admin/veiculos/novo" className="w-full sm:w-auto">
-          <button className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-sky-500/25 transition-all text-xs sm:text-sm uppercase tracking-wider cursor-pointer">
+          <button className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-red-600/25 transition-all text-xs sm:text-sm uppercase tracking-wider cursor-pointer">
             <Plus size={18} />
             <span>Adicionar Veículo</span>
           </button>
@@ -154,8 +154,8 @@ export default function AdminVehiclesPage() {
       {/* Loading state */}
       {loading && (
         <div className="bg-white rounded-3xl p-12 text-center text-gray-400 font-medium shadow-sm border border-gray-100">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-sky-500 mx-auto mb-3"></div>
-          Carregando veículos da Baby Motos...
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-red-600 mx-auto mb-3"></div>
+          Carregando veículos da Cabo Car Multimarcas...
         </div>
       )}
 

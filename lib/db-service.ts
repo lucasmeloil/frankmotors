@@ -49,60 +49,60 @@ export interface VendaRecord {
 
 export const INITIAL_VEHICLES: VehicleRecord[] = [
   {
-    id: 'bm-titan-160-2026',
-    marca: 'Honda',
-    modelo: 'CG 160 Titan',
-    ano: 2026,
-    cor: 'Azul Metálico',
-    precoCusto: 16500,
-    preco: 19900,
-    lucro: 3400,
-    descricao: 'Honda CG 160 Titan 2026 Zero KM. Freios CBS, painel digital blackout, partida elétrica e injeção eletrônica.',
-    tipo: 'moto',
+    id: 'cc-l200-triton-2024',
+    marca: 'Mitsubishi',
+    modelo: 'L200 Triton HPE 2.4',
+    ano: 2024,
+    cor: 'Preto Ônix',
+    precoCusto: 210000,
+    preco: 249900,
+    lucro: 39900,
+    descricao: 'L200 Triton HPE 2024 2.4 Turbo Diesel 4x4 Automática. Oportunidade exclusiva CABO CAR. Completa, tração Super Select II, multimídia com espelhamento e garantia total de procedência.',
+    tipo: 'carro',
     promocao: true,
-    estoque: 3,
+    estoque: 1,
     status: 'disponivel',
-    fotos: [{ url: '/assets/hero-1.png', position: 0 }],
+    fotos: [{ url: '/assets/banner-cabocar.png', position: 0 }],
     created_at: new Date().toISOString()
   },
   {
-    id: 'bm-biz-125-2026',
-    marca: 'Honda',
-    modelo: 'Biz 125',
-    ano: 2026,
-    cor: 'Prata / Azul',
-    precoCusto: 13200,
-    preco: 16500,
-    lucro: 3300,
-    descricao: 'Honda Biz 125 2026. Câmbio semi-automático, tomada 12V, porta-capacetes espaçoso e máxima economia de combustível.',
-    tipo: 'scooter',
+    id: 'cc-hilux-srx-2024',
+    marca: 'Toyota',
+    modelo: 'Hilux SRX 2.8 4x4 AT',
+    ano: 2024,
+    cor: 'Branca Pérola',
+    precoCusto: 265000,
+    preco: 315000,
+    lucro: 50000,
+    descricao: 'Toyota Hilux SRX 2.8 Diesel 4x4 Automática. Interior em couro preto, som JBL premium, faróis em LED, periciada e revisada em concessionária.',
+    tipo: 'carro',
     promocao: true,
-    estoque: 2,
+    estoque: 1,
     status: 'disponivel',
-    fotos: [{ url: '/assets/hero-2.png', position: 0 }],
+    fotos: [{ url: 'https://images.unsplash.com/photo-1621932953912-0b6d8bb2c54e?auto=format&fit=crop&q=80&w=1000', position: 0 }],
     created_at: new Date().toISOString()
   },
   {
-    id: 'bm-pop-110i-2026',
-    marca: 'Honda',
-    modelo: 'Pop 110i ES',
-    ano: 2026,
-    cor: 'Branco / Azul',
-    precoCusto: 8900,
-    preco: 11200,
-    lucro: 2300,
-    descricao: 'Honda Pop 110i 2026 com partida elétrica. A moto mais econômica do Brasil, ideal para trabalho e mobilidade diária.',
-    tipo: 'moto',
+    id: 'cc-corolla-altis-2024',
+    marca: 'Toyota',
+    modelo: 'Corolla Altis Premium Hybrid',
+    ano: 2024,
+    cor: 'Cinza Granito',
+    precoCusto: 155000,
+    preco: 182900,
+    lucro: 27900,
+    descricao: 'Toyota Corolla Altis Premium Híbrido 2024. O sedan mais confiável do mundo com consumo inacreditável. Teto solar, piloto automático adaptativo e pacote Safety Sense completo.',
+    tipo: 'carro',
     promocao: true,
-    estoque: 4,
+    estoque: 1,
     status: 'disponivel',
-    fotos: [{ url: '/assets/hero-3.png', position: 0 }],
+    fotos: [{ url: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=1000', position: 0 }],
     created_at: new Date().toISOString()
   }
 ];
 
-const LOCAL_STORAGE_KEY = 'babymotos_vehicles_store';
-const LOCAL_STORAGE_VENDAS_KEY = 'babymotos_vendas_store';
+const LOCAL_STORAGE_KEY = 'cabocar_vehicles_store';
+const LOCAL_STORAGE_VENDAS_KEY = 'cabocar_vendas_store';
 
 // Helper to get local stored vehicles
 function getLocalVehicles(): VehicleRecord[] {

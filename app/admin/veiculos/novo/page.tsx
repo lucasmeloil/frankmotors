@@ -231,7 +231,7 @@ export default function VehicleFormPage() {
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-sky-500 rounded-xl transition-all outline-none text-sm font-bold" 
                 value={formData.marca} 
                 onChange={e => setFormData({ ...formData, marca: e.target.value })} 
-                placeholder="Ex: Honda, Yamaha, Suzuki" 
+                placeholder="Ex: Toyota, Mitsubishi, Jeep, Honda, Chevrolet" 
               />
             </div>
             <div className="space-y-2">
@@ -239,10 +239,10 @@ export default function VehicleFormPage() {
               <input 
                 type="text" 
                 required 
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-sky-500 rounded-xl transition-all outline-none text-sm font-bold" 
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-red-500 rounded-xl transition-all outline-none text-sm font-bold" 
                 value={formData.modelo} 
                 onChange={e => setFormData({ ...formData, modelo: e.target.value })} 
-                placeholder="Ex: Biz 125, Titan 160, Pop 110i" 
+                placeholder="Ex: L200 Triton, Hilux, Corolla, Compass, Civic" 
               />
             </div>
             <div className="space-y-2">
@@ -252,7 +252,7 @@ export default function VehicleFormPage() {
                 required 
                 min="1990" 
                 max={new Date().getFullYear() + 2} 
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-sky-500 rounded-xl transition-all outline-none text-sm font-bold" 
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-red-500 rounded-xl transition-all outline-none text-sm font-bold" 
                 value={formData.ano} 
                 onChange={e => setFormData({ ...formData, ano: parseInt(e.target.value) || new Date().getFullYear() })} 
               />
@@ -262,23 +262,24 @@ export default function VehicleFormPage() {
               <input 
                 type="text" 
                 required 
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-sky-500 rounded-xl transition-all outline-none text-sm font-bold" 
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-red-500 rounded-xl transition-all outline-none text-sm font-bold" 
                 value={formData.cor} 
                 onChange={e => setFormData({ ...formData, cor: e.target.value })} 
-                placeholder="Ex: Vermelho, Preto Fosco, Azul Metálico, Prata" 
+                placeholder="Ex: Preto Ônix, Branco Pérola, Cinza Granito, Vermelho" 
               />
             </div>
             <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Tipo de Veículo</label>
               <select 
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-sky-500 rounded-xl transition-all outline-none text-sm font-bold" 
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-red-500 rounded-xl transition-all outline-none text-sm font-bold" 
                 value={formData.tipo} 
                 onChange={e => setFormData({ ...formData, tipo: e.target.value })}
               >
-                <option value="moto">Moto</option>
-                <option value="scooter">Scooter</option>
-                <option value="carro">Carro</option>
-                <option value="utilitario">Utilitário</option>
+                <option value="carro">Carro / Sedan</option>
+                <option value="suv">SUV / Crossover</option>
+                <option value="picape">Picape / Caminhonete</option>
+                <option value="hatch">Hatchback</option>
+                <option value="utilitario">Utilitário / Van</option>
                 <option value="outro">Outro</option>
               </select>
             </div>
@@ -338,7 +339,7 @@ export default function VehicleFormPage() {
                   placeholder="0,00"
                 />
               </div>
-              <p className="text-[10px] text-green-600 font-bold">✅ Exibido publicamente no site Baby Motos</p>
+              <p className="text-[10px] text-green-600 font-bold">✅ Exibido publicamente no site Cabo Car Multimarcas</p>
             </div>
           </div>
 
@@ -437,8 +438,8 @@ export default function VehicleFormPage() {
               checked={formData.promocao}
               onChange={e => setFormData({ ...formData, promocao: e.target.checked })}
             />
-            <label htmlFor="promocao" className="font-bold text-sky-900 cursor-pointer text-xs sm:text-sm">
-              ⭐ Destacar na Página Inicial (Oferta Especial Baby Motos)
+            <label htmlFor="promocao" className="font-bold text-gray-900 cursor-pointer text-xs sm:text-sm">
+              ⭐ Destacar na Página Inicial (Oferta Especial Cabo Car Multimarcas)
             </label>
           </div>
         </div>

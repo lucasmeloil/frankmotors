@@ -42,15 +42,15 @@ export const mockVehicles: Vehicle[] = [
   },
   {
     id: "4",
-    marca: "Yamaha",
-    modelo: "MT-09",
+    marca: "Mitsubishi",
+    modelo: "L200 Triton HPE 2.4",
     ano: 2024,
-    preco: 62000,
-    tipo: "moto",
-    descricao: "The Master of Torque. Nova geração com quickshifter e eletrônica de ponta. Pronta entrega.",
-    promocao: false,
-    estoque: 2,
-    fotos: [{ id: "f4", url: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=1000", position: 1 }],
+    preco: 249900,
+    tipo: "carro",
+    descricao: "L200 Triton HPE 2.4 Turbo Diesel 4x4 Automática. Oportunidade exclusiva CABO CAR. Revisada, garantia de procedência e IPVA 2026 pago.",
+    promocao: true,
+    estoque: 1,
+    fotos: [{ id: "f4", url: "/assets/banner-cabocar.png", position: 1 }],
     created_at: new Date().toISOString()
   },
   {

@@ -80,7 +80,7 @@ export default function UsersPage() {
         <div className="lg:w-1/3">
           <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-gray-100 space-y-5 lg:sticky lg:top-24">
             <div className="flex items-center space-x-2 text-primary">
-              <UserPlus size={20} className="text-sky-500" />
+              <UserPlus size={20} className="text-red-600" />
               <h3 className="font-heading font-black uppercase tracking-widest text-xs sm:text-sm">Novo Admin</h3>
             </div>
 
@@ -94,8 +94,8 @@ export default function UsersPage() {
                     required
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-sky-500 rounded-xl text-sm transition-all outline-none font-medium"
-                    placeholder="admin@babymotos.com"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-red-500 rounded-xl text-sm transition-all outline-none font-medium"
+                    placeholder="admin@cabocar.com.br"
                   />
                 </div>
               </div>
@@ -109,7 +109,7 @@ export default function UsersPage() {
                     required
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-sky-500 rounded-xl text-sm transition-all outline-none font-medium"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 focus:bg-white focus:ring-2 focus:ring-red-500 rounded-xl text-sm transition-all outline-none font-medium"
                     placeholder="••••••••"
                   />
                 </div>
@@ -117,7 +117,7 @@ export default function UsersPage() {
 
               <button 
                 type="submit"
-                className="w-full py-3.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white rounded-xl font-black uppercase tracking-widest text-xs transition-all shadow-lg shadow-sky-500/25 cursor-pointer"
+                className="w-full py-3.5 bg-gradient-to-r from-red-600 to-zinc-900 hover:from-red-700 hover:to-black text-white rounded-xl font-black uppercase tracking-widest text-xs transition-all shadow-lg shadow-red-600/25 cursor-pointer"
               >
                 CRIAR ADMINISTRADOR
               </button>
@@ -149,7 +149,7 @@ export default function UsersPage() {
                 users.map((user) => (
                   <div key={user.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50 transition-colors">
                     <div className="flex items-center space-x-3.5 min-w-0">
-                      <div className="w-10 h-10 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center font-black text-xs uppercase shrink-0">
+                      <div className="w-10 h-10 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center font-black text-xs uppercase shrink-0">
                         {user.email.substring(0, 2)}
                       </div>
                       <div className="min-w-0">
@@ -162,7 +162,7 @@ export default function UsersPage() {
                         </div>
                       </div>
                     </div>
-                    {user.email !== 'lucasmelo@nexus.com' && (
+                    {user.email !== 'admin@cabocar.com.br' && (
                       <button 
                         onClick={() => handleDeleteUser(user.id)}
                         className="self-end sm:self-auto p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
@@ -177,6 +177,7 @@ export default function UsersPage() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

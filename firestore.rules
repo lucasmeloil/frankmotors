@@ -1,17 +1,61 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Regras para a coleção de veículos
-    match /vehicles/{vehicle} {
-      // Qualquer um pode ler (para mostrar no site)
-      allow read: if true;
-      // Apenas usuários autenticados (admin) podem criar/editar/deletar
-      allow write: if request.auth != null;
+
+    // Funções de verificação e segurança (Anti-IDOR e RBAC)
+    function isAuthenticated() {
+      return request.auth != null;
     }
-    
-    // Regra padrão para outras coleções (bloqueia tudo por segurança, libera apenas para admin)
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email.lower() == 'admin@cabocar.com.br' ||
+        request.auth.token.email.lower() == 'admin@cabocarmultimarcas.com.br' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 🚗 Veículos (Catálogo público, modificação restrita exclusivamente ao Admin)
+    match /vehicles/{vehicle} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // 👤 Perfis de Usuário (Proteção rigorosa contra IDOR)
+    match /users/{userId} {
+      // Usuário só pode ler seu próprio registro; Administrador pode ler todos
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Criação de perfil: usuário não pode atribuir a si mesmo o papel de 'admin'
+      allow create: if isOwner(userId) && (
+        !('role' in request.resource.data) || 
+        request.resource.data.role != 'admin' || 
+        request.auth.token.email.lower() == 'admin@cabocar.com.br'
+      );
+      
+      // Atualização: não permite escalada de privilégios para usuário comum
+      allow update: if (isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 💰 Vendas e Inteligência Financeira (Acesso confidencial restrito ao Admin)
+    match /vendas/{venda} {
+      allow read, write: if isAdmin();
+    }
+
+    // 🔐 Configurações e Chaves Seguras
+    match /settings/{setting} {
+      allow read, write: if isAdmin();
+    }
+
+    // 🛑 Bloqueio padrão para qualquer outra rota não autorizada
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if isAdmin();
     }
   }
 }

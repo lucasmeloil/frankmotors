@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { 
   LayoutDashboard, 
-  Bike, 
+  Car, 
   Users, 
   LogOut, 
   Menu, 
@@ -14,10 +14,11 @@ import {
   Globe, 
   BarChart2, 
   ChevronRight, 
-  ChevronDown,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  KeyRound
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -38,25 +39,50 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // Use Firebase Auth state as the source of truth
     let unsubscribe: (() => void) | undefined;
     (async () => {
-      const { auth } = await import('@/lib/firebase');
-      const { onAuthStateChanged } = await import('firebase/auth');
+      const { auth, db } = await import('@/lib/firebase');
+      const { onAuthStateChanged, signOut } = await import('firebase/auth');
+      const { doc, getDoc } = await import('firebase/firestore');
+
       unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (user) {
+          const normalizedEmail = (user.email || '').toLowerCase().trim();
+          
+          // 🛡️ Strict Authorization Check: Only admin@cabocar.com.br or verified admin role
+          let isAuthorized = normalizedEmail === 'admin@cabocar.com.br' || normalizedEmail === 'admin@cabocarmultimarcas.com.br';
+
+          if (!isAuthorized) {
+            try {
+              const userDoc = await getDoc(doc(db, 'users', user.uid));
+              if (userDoc.exists() && userDoc.data().role === 'admin') {
+                isAuthorized = true;
+              }
+            } catch (err) {
+              console.error('Erro ao verificar permissão admin:', err);
+            }
+          }
+
+          if (!isAuthorized) {
+            toast.error('Acesso Restrito', {
+              description: 'Clientes não possuem acesso ao painel administrativo. Redirecionando...'
+            });
+            await signOut(auth);
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            router.push('/login');
+            return;
+          }
+
           const displayName = user.displayName || user.email?.split('@')[0] || 'Admin';
           const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
           setAdminUser({ name: displayName, email: user.email || '', initials });
+          
           // Refresh token in localStorage
           const token = await user.getIdToken();
           localStorage.setItem('admin_token', token);
           setIsAuthenticated(true);
         } else {
-          // No user logged in - check localStorage fallback
-          const token = localStorage.getItem('admin_token');
-          if (!token) {
-            router.push('/admin/login');
-          } else {
-            setIsAuthenticated(true);
-          }
+          localStorage.removeItem('admin_token');
+          router.push('/admin/login');
         }
       });
     })();
@@ -81,9 +107,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const menuItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/admin', desc: 'Resumo geral e financeiro' },
-    { label: 'Veículos / Motos', icon: Bike, path: '/admin/veiculos', desc: 'Estoque, cadastro e vendas' },
+    { label: 'Veículos', icon: Car, path: '/admin/veiculos', desc: 'Estoque, cadastro e vendas' },
     { label: 'Relatórios', icon: BarChart2, path: '/admin/relatorios', desc: 'Fluxo de caixa e lucros' },
     { label: 'Usuários', icon: Users, path: '/admin/usuarios', desc: 'Gestão de administradores' },
+    { label: 'Segurança & Chaves', icon: KeyRound, path: '/admin/seguranca', desc: 'Chaves, URLs e proteção' },
   ];
 
   const currentItem = menuItems.find(i => i.path === pathname) || { label: 'Painel Admin', icon: LayoutDashboard, desc: '' };
@@ -92,38 +119,38 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row font-sans text-slate-900">
       
       {/* ========================================================================= */}
-      {/* 📱 MOBILE TOP NAVBAR WITH DROP-DOWN MENU (Desce de cima para baixo) */}
+      {/* 📱 MOBILE TOP NAVBAR WITH DROP-DOWN MENU */}
       {/* ========================================================================= */}
-      <div className="md:hidden sticky top-0 z-50 bg-[#06101e] border-b border-sky-900/40 text-white shadow-xl print:hidden">
+      <div className="md:hidden sticky top-0 z-50 bg-[#09090b] border-b border-red-900/40 text-white shadow-xl print:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           {/* Brand / Logo */}
           <Link href="/admin" className="flex items-center space-x-2.5 group">
-            <div className="relative w-32 h-9 flex-shrink-0">
+            <div className="relative w-36 h-9 flex-shrink-0">
               <Image 
-                src="/assets/logo-babymotos-transparent.png" 
-                alt="Baby Motos" 
+                src="/assets/logo-cabocar.png" 
+                alt="Cabo Car Multimarcas" 
                 fill 
-                className="object-contain filter drop-shadow-[0_2px_8px_rgba(0,166,255,0.5)]" 
+                className="object-contain filter drop-shadow-[0_2px_8px_rgba(220,38,38,0.5)]" 
                 priority
               />
             </div>
-            <span className="bg-sky-500/20 text-sky-300 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-sky-400/30">
+            <span className="bg-red-600/20 text-red-400 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-red-500/30">
               Admin
             </span>
           </Link>
 
           {/* Right Actions: User Badge + Menu Button */}
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center font-black text-white text-xs shadow-md shadow-sky-500/30">
-              {adminUser?.initials || 'BM'}
+            <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center font-black text-white text-xs shadow-md shadow-red-600/30">
+              {adminUser?.initials || 'CC'}
             </div>
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={`p-2.5 rounded-xl transition-all flex items-center justify-center cursor-pointer ${
                 isMobileMenuOpen 
-                  ? 'bg-sky-500 text-white ring-2 ring-sky-300' 
-                  : 'bg-white/10 text-sky-400 hover:bg-white/20 active:scale-95'
+                  ? 'bg-red-600 text-white ring-2 ring-red-400' 
+                  : 'bg-white/10 text-red-400 hover:bg-white/20 active:scale-95'
               }`}
               aria-label="Abrir menu de navegação"
               aria-expanded={isMobileMenuOpen}
@@ -138,8 +165,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Current Active Page Mobile Sub-bar */}
-        <div className="px-4 py-1.5 bg-[#0b192c] border-t border-white/5 flex items-center justify-between text-xs">
-          <div className="flex items-center space-x-2 text-sky-400">
+        <div className="px-4 py-1.5 bg-[#121214] border-t border-white/5 flex items-center justify-between text-xs">
+          <div className="flex items-center space-x-2 text-red-500">
             <currentItem.icon size={14} />
             <span className="font-black uppercase tracking-wider text-[11px] text-white">
               {currentItem.label}
@@ -153,22 +180,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* 🔻 TOP-TO-BOTTOM DROPDOWN MENU PANEL 🔻 */}
         {isMobileMenuOpen && (
           <div 
-            className="fixed inset-x-0 top-[88px] z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 min-h-[calc(100vh-88px)]"
+            className="fixed inset-x-0 top-[88px] z-40 bg-black/70 backdrop-blur-sm transition-opacity duration-300 min-h-[calc(100vh-88px)]"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <div 
-              className="bg-[#06101e] border-b border-sky-500/30 shadow-2xl overflow-hidden rounded-b-3xl animate-in slide-in-from-top duration-300"
+              className="bg-[#09090b] border-b border-red-600/30 shadow-2xl overflow-hidden rounded-b-3xl animate-in slide-in-from-top duration-300"
               onClick={(e) => e.stopPropagation()}
             >
               {/* User Profile Banner in Dropdown */}
-              <div className="p-4 bg-gradient-to-r from-sky-950/80 to-[#0b192c] border-b border-white/10 flex items-center justify-between">
+              <div className="p-4 bg-gradient-to-r from-red-950/80 to-[#121214] border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md shadow-sky-500/40">
-                    {adminUser?.initials || 'BM'}
+                  <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md shadow-red-600/40">
+                    {adminUser?.initials || 'CC'}
                   </div>
                   <div>
                     <p className="text-xs font-black text-white uppercase">{adminUser?.name || 'Administrador'}</p>
-                    <p className="text-[10px] text-sky-300 truncate max-w-[200px]">{adminUser?.email || 'admin@babymotos.com'}</p>
+                    <p className="text-[10px] text-red-300 truncate max-w-[200px]">{adminUser?.email || 'admin@cabocarmultimarcas.com'}</p>
                   </div>
                 </div>
                 <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-1 rounded-full">
@@ -191,17 +218,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`flex items-center justify-between p-3.5 rounded-2xl transition-all ${
                         isActive
-                          ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30 font-black'
+                          ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/30 font-black'
                           : 'bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white'
                       }`}
                     >
                       <div className="flex items-center space-x-3.5">
-                        <div className={`p-2 rounded-xl ${isActive ? 'bg-white/20 text-white' : 'bg-white/5 text-sky-400'}`}>
+                        <div className={`p-2 rounded-xl ${isActive ? 'bg-white/20 text-white' : 'bg-white/5 text-red-400'}`}>
                           <Icon size={20} />
                         </div>
                         <div>
                           <p className="text-xs font-black uppercase tracking-wider">{item.label}</p>
-                          <p className={`text-[10px] ${isActive ? 'text-sky-100' : 'text-slate-400'}`}>{item.desc}</p>
+                          <p className={`text-[10px] ${isActive ? 'text-red-100' : 'text-slate-400'}`}>{item.desc}</p>
                         </div>
                       </div>
                       <ChevronRight size={16} className={isActive ? 'text-white' : 'text-slate-500'} />
@@ -219,18 +246,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href="/"
                     target="_blank"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/20 transition-all"
+                    className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-all"
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300">
+                      <div className="p-2 rounded-xl bg-white/10 text-white">
                         <Globe size={18} />
                       </div>
                       <div>
                         <p className="text-xs font-black uppercase tracking-wider">Ver Site Público</p>
-                        <p className="text-[10px] text-emerald-200/70">Acessar vitrine pública da loja</p>
+                        <p className="text-[10px] text-gray-400">Acessar vitrine pública da loja</p>
                       </div>
                     </div>
-                    <ChevronRight size={16} className="text-emerald-400" />
+                    <ChevronRight size={16} className="text-gray-400" />
                   </Link>
 
                   {/* Sign Out Button */}
@@ -257,23 +284,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* ========================================================================= */}
-      {/* 🖥️ DESKTOP SIDEBAR (Apenas em telas md: ou maiores) */}
+      {/* 🖥️ DESKTOP SIDEBAR */}
       {/* ========================================================================= */}
       <aside 
-        className={`hidden md:flex fixed inset-y-0 left-0 z-50 bg-[#06101e] text-white transition-all duration-500 ease-in-out flex-col shadow-2xl print:hidden border-r border-sky-950/40
+        className={`hidden md:flex fixed inset-y-0 left-0 z-50 bg-[#09090b] text-white transition-all duration-500 ease-in-out flex-col shadow-2xl print:hidden border-r border-red-950/40
           ${isSidebarOpen ? 'w-72' : 'w-24'}
         `}
       >
         {/* Sidebar Brand Header */}
-        <div className="p-4 h-24 flex items-center justify-between border-b border-white/5 bg-black/20">
+        <div className="p-4 h-24 flex items-center justify-between border-b border-white/5 bg-black/40">
           <Link href="/admin" className={`flex items-center space-x-3 transition-opacity duration-300 ${!isSidebarOpen ? 'opacity-0 invisible w-0' : 'opacity-100 visible'}`}>
-            <div className="relative w-44 h-12 flex-shrink-0 group/side-logo">
-              <div className="absolute inset-0 bg-sky-500/20 rounded-xl blur-lg group-hover/side-logo:bg-sky-400/40 transition-all" />
+            <div className="relative w-48 h-12 flex-shrink-0 group/side-logo">
+              <div className="absolute inset-0 bg-red-600/20 rounded-xl blur-lg group-hover/side-logo:bg-red-500/40 transition-all" />
               <Image 
-                src="/assets/logo-babymotos-transparent.png" 
-                alt="Baby Motos" 
+                src="/assets/logo-cabocar.png" 
+                alt="Cabo Car Multimarcas" 
                 fill 
-                className="object-contain relative z-10 filter drop-shadow-[0_2px_10px_rgba(0,166,255,0.6)] group-hover/side-logo:scale-105 transition-transform" 
+                className="object-contain relative z-10 filter drop-shadow-[0_2px_10px_rgba(220,38,38,0.6)] group-hover/side-logo:scale-105 transition-transform" 
                 priority
               />
             </div>
@@ -283,7 +310,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className={`p-2 hover:bg-white/10 rounded-xl transition-all cursor-pointer ${!isSidebarOpen ? 'mx-auto' : ''}`}
             title={isSidebarOpen ? "Recolher menu" : "Expandir menu"}
           >
-            {isSidebarOpen ? <X size={20} className="text-gray-400 hover:text-white" /> : <Menu size={22} className="text-sky-400" />}
+            {isSidebarOpen ? <X size={20} className="text-gray-400 hover:text-white" /> : <Menu size={22} className="text-red-500" />}
           </button>
         </div>
 
@@ -299,7 +326,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href={item.path}
                     className={`flex items-center p-3.5 rounded-2xl transition-all group ${
                       isActive 
-                        ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30' 
+                        ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/30' 
                         : 'hover:bg-white/5 text-gray-400 hover:text-white'
                     }`}
                   >
@@ -321,10 +348,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link 
             href="/"
             target="_blank"
-            className={`flex items-center p-3 text-emerald-400 hover:text-white hover:bg-emerald-500/20 w-full rounded-2xl transition-all group ${!isSidebarOpen ? 'justify-center' : ''}`}
+            className={`flex items-center p-3 text-gray-300 hover:text-white hover:bg-white/10 w-full rounded-2xl transition-all group ${!isSidebarOpen ? 'justify-center' : ''}`}
             title="Ver Site Público"
           >
-            <Globe size={20} className="group-hover:rotate-12 transition-transform flex-shrink-0" />
+            <Globe size={20} className="group-hover:rotate-12 transition-transform flex-shrink-0 text-red-500" />
             <span className={`ml-3 font-black text-xs uppercase tracking-widest transition-all duration-300 ${
               !isSidebarOpen ? 'opacity-0 invisible w-0' : 'opacity-100 visible'
             }`}>
@@ -348,7 +375,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* ========================================================================= */}
-      {/* 📄 MAIN CONTENT AREA (Com margens responsivas no mobile) */}
+      {/* 📄 MAIN CONTENT AREA */}
       {/* ========================================================================= */}
       <main className={`flex-1 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'md:ml-72' : 'md:ml-24'} ml-0 print:!ml-0 print:!p-0 print:!bg-white min-w-0`}>
         
@@ -357,13 +384,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center space-x-4">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 hover:bg-gray-100 rounded-xl transition-all text-primary cursor-pointer"
+              className="p-2 hover:bg-gray-100 rounded-xl transition-all text-gray-900 cursor-pointer"
               title="Expandir/recolher menu"
             >
               <Menu size={22} />
             </button>
             <div>
-              <h2 className="font-heading text-xl font-black text-primary uppercase">
+              <h2 className="font-heading text-xl font-black text-gray-950 uppercase">
                 {currentItem.label}
               </h2>
               {currentItem.desc && (
@@ -374,16 +401,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           
           <div className="flex items-center space-x-4">
             <div className="flex flex-col items-end">
-              <span className="text-xs font-black text-primary uppercase">{adminUser?.name || 'Admin'}</span>
-              <span className="text-[10px] font-bold text-sky-600 uppercase tracking-tight">{adminUser?.email || 'Administrador'}</span>
+              <span className="text-xs font-black text-gray-950 uppercase">{adminUser?.name || 'Admin'}</span>
+              <span className="text-[10px] font-bold text-red-600 uppercase tracking-tight">{adminUser?.email || 'Administrador'}</span>
             </div>
-            <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center font-black text-white shadow-lg shadow-sky-500/20 text-sm">
-              {adminUser?.initials || 'BM'}
+            <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-2xl flex items-center justify-center font-black text-white shadow-lg shadow-red-600/20 text-sm">
+              {adminUser?.initials || 'CC'}
             </div>
           </div>
         </header>
 
-        {/* Content Container — Responsivo para Mobile (p-3 sm:p-6 md:p-8) */}
+        {/* Content Container */}
         <div className="p-3 sm:p-6 md:p-8 print:!p-0 max-w-7xl mx-auto w-full">
           {children}
         </div>
@@ -391,4 +418,3 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     </div>
   );
 }
-

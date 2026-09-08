@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Bike, MessageCircle, Users } from 'lucide-react';
+import { Home, Car, MessageCircle, Users } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
 export default function MobileFixedMenu() {
@@ -15,7 +15,7 @@ export default function MobileFixedMenu() {
   const menuItems = [
     { label: 'Início', path: '/', icon: Home },
     { label: 'Quem Somos', path: '/quem-somos', icon: Users },
-    { label: 'Motos', path: '/veiculos', icon: Bike },
+    { label: 'Veículos', path: '/veiculos', icon: Car },
     { label: 'Contato', path: '/contato', icon: MessageCircle },
   ];
 
@@ -23,7 +23,7 @@ export default function MobileFixedMenu() {
     <>
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] animate-slide-up">
         {/* Full width glass container matching Navbar style */}
-        <div className="glass-nav border-t border-white/20 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex justify-between items-center px-6 py-4 pb- safe-area-bottom">
+        <div className="bg-[#0a0a0c]/95 backdrop-blur-xl border-t border-red-600/20 shadow-[0_-10px_40px_rgba(0,0,0,0.4)] flex justify-between items-center px-6 py-3.5 pb-safe-area-bottom">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.path;
@@ -31,24 +31,23 @@ export default function MobileFixedMenu() {
               <Link
                 key={item.path}
                 href={item.path}
-                className={`flex flex-col items-center justify-center space-y-1.5 transition-all duration-300 group ${
-                  isActive ? 'text-secondary -translate-y-1' : 'text-gray-400 hover:text-primary'
+                className={`flex flex-col items-center justify-center space-y-1 transition-all duration-300 group ${
+                  isActive ? 'text-red-500 -translate-y-0.5' : 'text-gray-400 hover:text-white'
                 }`}
               >
                 <div className={`relative ${isActive ? 'scale-110' : 'scale-100 group-hover:scale-110'} transition-transform`}>
                   <Icon 
-                    size={24} 
+                    size={22} 
                     strokeWidth={isActive ? 2.5 : 2} 
-                    className={isActive ? 'drop-shadow-sm' : ''} 
+                    className={isActive ? 'drop-shadow-[0_0_8px_rgba(220,38,38,0.6)]' : ''} 
                   />
                   {isActive && (
-                     <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full shadow-sm"></span>
+                     <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-600 rounded-full shadow-[0_0_6px_#dc2626]"></span>
                   )}
                 </div>
-                {/* Optional: Text label can be hidden or shown depending on minimal preference. Sticking to minimal but readable per user request for "taking up space" */}
-                {/* <span className={`text-[9px] font-black uppercase tracking-[0.1em] ${isActive ? 'opacity-100' : 'opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100'} transition-all`}>
+                <span className={`text-[10px] font-black uppercase tracking-wider ${isActive ? 'text-red-500' : 'text-gray-400'}`}>
                   {item.label}
-                </span> */}
+                </span>
               </Link>
             );
           })}

@@ -77,7 +77,7 @@ export default function VeiculosPage() {
             Catálogo <span className="text-secondary font-normal">Completo</span>
           </h1>
           <p className="text-gray-400 mt-2 font-medium">
-            Mais de 50 veículos periciados e com garantia premium
+            Carros novos e seminovos multimarcas com procedência e garantia CABO CAR
           </p>
         </div>
       </div>
@@ -112,10 +112,10 @@ export default function VeiculosPage() {
                       className="w-full bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-secondary/20 focus:border-secondary rounded-2xl px-5 py-4 font-bold text-sm appearance-none transition-all"
                     >
                       <option value="">Todas as Categorias</option>
-                      <option value="carro">Automóveis</option>
-                      <option value="moto">Motocicletas</option>
-                      <option value="jetski">Náutica</option>
-                      <option value="utilitario">Utilitários</option>
+                      <option value="carro">Carros & Sedans</option>
+                      <option value="suv">SUVs & Crossovers</option>
+                      <option value="picape">Picapes & Utilitários</option>
+                      <option value="hatch">Hatchbacks</option>
                     </select>
                     <ChevronDown size={16} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                   </div>

@@ -6,6 +6,7 @@ import {
   deleteVehicleFromDatabase, 
   VehicleRecord 
 } from '@/lib/db-service';
+import { checkIsAdminRequest } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,8 +15,10 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const singleId = searchParams.get('id');
-    const includePrivate = searchParams.get('includePrivate') === 'true';
+    const isAdmin = checkIsAdminRequest(request);
+    const includePrivate = isAdmin && searchParams.get('includePrivate') === 'true';
     const all = searchParams.get('all') === 'true';
+
 
     // If single item requested
     if (singleId) {
@@ -81,6 +84,9 @@ export async function GET(request: NextRequest) {
 // POST /api/vehicles - Add new vehicle
 export async function POST(request: NextRequest) {
   try {
+    if (!checkIsAdminRequest(request)) {
+      return NextResponse.json({ error: 'Acesso negado: apenas administradores podem cadastrar veículos' }, { status: 403 });
+    }
     const body = await request.json();
     const docId = await saveVehicleToDatabase(body);
     const created = await getVehicleById(docId);
@@ -94,6 +100,9 @@ export async function POST(request: NextRequest) {
 // PUT /api/vehicles - Update vehicle
 export async function PUT(request: NextRequest) {
   try {
+    if (!checkIsAdminRequest(request)) {
+      return NextResponse.json({ error: 'Acesso negado: apenas administradores podem atualizar veículos' }, { status: 403 });
+    }
     const body = await request.json();
     if (!body.id) {
       return NextResponse.json({ error: 'ID do veículo obrigatório' }, { status: 400 });
@@ -111,6 +120,9 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/vehicles
 export async function DELETE(request: NextRequest) {
   try {
+    if (!checkIsAdminRequest(request)) {
+      return NextResponse.json({ error: 'Acesso negado: apenas administradores podem excluir veículos' }, { status: 403 });
+    }
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -125,3 +137,4 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
